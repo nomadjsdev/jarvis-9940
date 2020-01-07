@@ -13,9 +13,12 @@ const Register = () => {
 		<>
 			<h1>Register</h1>
 			<Formik
-				initialValues={{ email: '', password1: '', password2: '' }}
+				initialValues={{ username: '', email: '', password1: '', password2: '' }}
 				validate={values => {
 					const errors = {}
+					if (!values.username) {
+						errors.username = 'Required'
+					}
 					if (!values.email) {
 						errors.email = 'Required'
 					} else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
@@ -33,11 +36,14 @@ const Register = () => {
 					return errors
 				}}
 				onSubmit={values => {
-					dispatch(registerUser(values.email, values.password1))
+					dispatch(registerUser(values.email, values.password1, values.username))
 				}}
 			>
 				{({ isSubmitting }) => (
 					<Form>
+						<label htmlFor="username">Username</label>
+						<Field type="username" name="username" />
+						<ErrorMessage name="username" component="div" />
 						<label htmlFor="email">Email</label>
 						<Field type="email" name="email" />
 						<ErrorMessage name="email" component="div" />

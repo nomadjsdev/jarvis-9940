@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { logoutUser } from 'Store/Feature/auth'
+import useLocalUsername from 'Hook/useLocalUsername'
 
 const Navbar = () => {
 	const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
@@ -14,15 +15,32 @@ const Navbar = () => {
 	)
 }
 
-const NavbarDefault = () => (
-	<>
-		<NavLink to="/register">Register</NavLink> | <NavLink to="/login">Login</NavLink>
-	</>
-)
+const NavbarDefault = () => {
+	const [localUsername, setLocalUsername] = useLocalUsername()
+
+	return (
+		<>
+			<NavLink to="/register">Register</NavLink> | <NavLink to="/login">Login</NavLink>
+			{localUsername && (
+				<>
+					<span>{localUsername}</span>{' '}
+					<button
+						type="button"
+						onClick={() => {
+							setLocalUsername('Test2') //TODO: Bring in popup to handle name change
+						}}
+					>
+						Change...
+					</button>
+				</>
+			)}
+		</>
+	)
+}
 
 const NavbarAuth = () => {
 	const dispatch = useDispatch()
-	const details = useSelector(state => state.user.details)
+	const username = useSelector(state => state.user?.details?.username)
 
 	return (
 		<>
@@ -34,7 +52,7 @@ const NavbarAuth = () => {
 			>
 				Logout
 			</button>
-			<span>{details.email}</span>
+			<span>{username}</span>
 		</>
 	)
 }

@@ -12,16 +12,17 @@ import {
 	// clearUserError,
 } from 'Store/Slice/user'
 
-export const createUser = (uid, email) => dispatch => {
+export const createUser = (uid, email, username) => dispatch => {
 	dispatch(requestNewUser())
 
+	const initialUserState = { email, username }
+
 	myFirebase
-		.firestore()
-		.collection(`user`)
-		.doc(uid)
-		.set({ email })
+		.database()
+		.ref(`user/${uid}`)
+		.set(initialUserState)
 		.then(() => {
-			dispatch(receiveNewUser({ email }))
+			dispatch(receiveNewUser({ email, username }))
 		})
 		.catch(error => {
 			console.log(error)
@@ -35,22 +36,16 @@ export const fetchUser = uid => dispatch => {
 	dispatch(requestLoadUser())
 
 	myFirebase
-		.firestore()
-		.collection(`user`)
-		.doc(uid)
-		.get()
-		.then(doc => {
-			if (!doc.exists) {
-				console.log('No such user', doc)
-				dispatch(loadUserError('No user found'))
-			} else {
-				dispatch(receiveLoadUser(doc.data()))
-				return doc.data()
-			}
+		.database()
+		.ref(`user/${uid}`)
+		.once('value')
+		.then(snapshot => {
+			dispatch(receiveLoadUser(snapshot.val()))
+			return snapshot.val()
 		})
 		.then(value => {
 			// Do clan / group fetching here?
-			console.log(value)
+			// console.log(value)
 		})
 		.catch(error => {
 			console.log(error)

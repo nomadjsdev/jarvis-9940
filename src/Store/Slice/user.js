@@ -20,7 +20,7 @@ const userSlice = createSlice({
 		},
 		receiveNewUser(state, action) {
 			state.isCreating = false
-			state.details = { email: action.payload.email }
+			state.details = { email: action.payload.email, username: action.payload.username }
 		},
 		newUserError(state, action) {
 			state.isCreating = false

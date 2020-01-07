@@ -20,7 +20,7 @@ import {
 
 import { createUser, fetchUser, clearUser } from 'Store/Feature/user'
 
-export const registerUser = (email, password) => dispatch => {
+export const registerUser = (email, password, username) => dispatch => {
 	dispatch(requestRegister())
 
 	myFirebase
@@ -31,7 +31,7 @@ export const registerUser = (email, password) => dispatch => {
 			return response
 		})
 		.then(userObj => {
-			dispatch(createUser(userObj.user.uid, userObj.user.email))
+			dispatch(createUser(userObj.user.uid, userObj.user.email, username))
 		})
 		.catch(error => {
 			console.log(error)
