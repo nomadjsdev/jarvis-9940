@@ -15,6 +15,9 @@ import {
 export const createUser = (uid, email, username) => dispatch => {
 	dispatch(requestNewUser())
 
+	// TODO: Check username not already in use?
+	// Use separate table for all known usernames - array? How to store in NoSQL?
+
 	const initialUserState = { email, username }
 
 	myFirebase

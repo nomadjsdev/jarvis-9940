@@ -7,6 +7,7 @@ import Register from 'View/Register'
 import PasswordReset from 'View/PasswordReset'
 import Login from 'View/Login'
 import Session from 'View/Session'
+import Create from 'View/Session/Create'
 import Join from 'View/Session/Join'
 
 import Navbar from 'Component/Navbar'
@@ -58,11 +59,12 @@ const App = () => {
 				<Route path="/register">{isAuthenticated ? <Redirect to="/" /> : <Register />}</Route>
 				<Route path="/passwordreset">{isAuthenticated ? <Redirect to="/" /> : <PasswordReset />}</Route>
 				<Route path="/login">{isAuthenticated ? <Redirect to="/" /> : <Login />}</Route>
-				<Route path="/session/:id">
-					<Session />
+				<Route path="/session/:sessionId?">
+					<Session /> {/* TODO: Checking whether logged in or has username set should happen here or on page? */}
 				</Route>
+				<Route path="/create">{isAuthenticated ? <Create /> : <Redirect to="/login" />}</Route>
 				<Route path="/join">
-					<Join />
+					<Join /> {/* TODO: Checking whether logged in or has username set should happen here or on page? */}
 				</Route>
 				<Route path="/">
 					<Home />

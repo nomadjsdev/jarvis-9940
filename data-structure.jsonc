@@ -1,0 +1,112 @@
+{
+	"game": {
+		"gameID": {
+			"name": "string",
+			"isActive": true,
+			"hasPvE": true,
+			"hasPvP": true
+		}
+	},
+	"activity": {
+		"activityID": {
+			"name": "string",
+			"isActive": true
+		}
+	},
+	"encounter": {
+		"encounterID": {
+			"isActive": true,
+			"name": "string"
+		}
+	},
+	"gamePveActivity": {
+		"gameID": ["activityID", "activityID", "activityID"]
+	},
+	"gamePvpActivity": {
+		"gameID": ["activityID", "activityID", "activityID"]
+	},
+	"activityEncounter": {
+		"activityID": ["encounterID", "encounterID", "encounterID"]
+	},
+	"encounterTemplate": {
+		"encounterID": {
+			"row1": {
+				"col1": {
+					"item1": {
+						"id": "buttonID",
+						"type": "toggle",
+						"text": "string"
+					},
+					"item2": {
+						"id": "buttonID",
+						"type": "message",
+						"text": "string"
+					}
+				},
+				"col2": {
+					"item1": {
+						"id": "buttonID",
+						"type": "group",
+						"direction": "horizontal|vertical",
+						"buttons": [
+							{
+								"id": "buttonID",
+								"type": "button",
+								"text": "string"
+							},
+							{
+								"id": "buttonID",
+								"type": "button",
+								"text": "string"
+							}
+						]
+					}
+				}
+			}
+		}
+	},
+	"user": {
+		"email": "string",
+		"username": "string",
+		"level": "admin|contributor|user"
+	},
+	// This data is static, only fetch once
+	"sessionDetails": {
+		"sessionID": {
+			"created": "dateTime",
+			"expires": "dateTime",
+			"ownerID": "IDstring"
+		}
+	},
+	// This data is realtime, open a socket
+	"sessionData": {
+		"sessionID": {
+			"gameID": "gameID",
+			"gameName": "string",
+			"activityID": "activityID",
+			"activityName": "string",
+			"encounterID": "encounterID",
+			"encounterName": "string",
+			"readyCheck": {
+				"active": true,
+				"players": {
+					"playerName1": true,
+					"playerName2": false
+				}
+			},
+			"message": {
+				"style": {},
+				"text": "string"
+			},
+			"layout": {
+				"button1": false,
+				"button2": false,
+				"group1button1": 0,
+				"group1button2": 0
+			},
+			"chat": {
+				"timestamp": { "username": "string", "message": "string" }
+			}
+		}
+	}
+}

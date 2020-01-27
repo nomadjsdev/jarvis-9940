@@ -10,7 +10,8 @@ const Navbar = () => {
 
 	return (
 		<>
-			<NavLink to="/">Home</NavLink> | {isAuthenticated ? <NavbarAuth /> : <NavbarDefault />}
+			<NavLink to="/">Home</NavLink> | <NavLink to="/join">Join session</NavLink> |{' '}
+			{isAuthenticated ? <NavbarAuth /> : <NavbarDefault />}
 		</>
 	)
 }
@@ -34,6 +35,18 @@ const NavbarDefault = () => {
 					</button>
 				</>
 			)}
+			{!localUsername && (
+				<>
+					<button
+						type="button"
+						onClick={() => {
+							setLocalUsername('Test')
+						}}
+					>
+						Set username
+					</button>
+				</>
+			)}
 		</>
 	)
 }
@@ -44,6 +57,7 @@ const NavbarAuth = () => {
 
 	return (
 		<>
+			<NavLink to="/create">Create new session</NavLink> |
 			<button
 				type="button"
 				onClick={() => {
