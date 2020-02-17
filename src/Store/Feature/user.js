@@ -40,7 +40,7 @@ export const fetchUser = uid => dispatch => {
 
 	myFirebase
 		.database()
-		.ref(`user/${uid}`)
+		.ref(`users/${uid}`)
 		.once('value')
 		.then(snapshot => {
 			dispatch(receiveLoadUser(snapshot.val()))

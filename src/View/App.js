@@ -9,6 +9,7 @@ import Login from 'View/Login'
 import Session from 'View/Session'
 import Create from 'View/Session/Create'
 import Join from 'View/Session/Join'
+import Profile from 'View/Profile'
 
 import Navbar from 'Component/Navbar'
 
@@ -66,7 +67,10 @@ const App = () => {
 				<Route path="/join">
 					<Join /> {/* TODO: Checking whether logged in or has username set should happen here or on page? */}
 				</Route>
-				<Route path="/">
+				<Route path="/profile">
+					<Profile />
+				</Route>
+				<Route path="/" exact>
 					<Home />
 				</Route>
 			</Switch>

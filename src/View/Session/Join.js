@@ -1,21 +1,20 @@
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { useHistory, Link } from 'react-router-dom'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 
-import { joinSession } from 'Store/Feature/session'
+import myFirebase from 'Service/Firebase'
 
 const Join = () => {
-	const dispatch = useDispatch()
-	const sessionError = useSelector(state => state.session?.joinSessionError)
-	const isValid = useSelector(state => state.session?.isValid)
+	let history = useHistory()
+	const [sessionId, setSessionId] = useState(null)
+	const [isValid, setIsValid] = useState(false)
+	const [sessionError, setSessionError] = useState(null)
+
 	useEffect(() => {
 		if (isValid) {
-			// TODO: Redirect / forward to `session/${isValid}
+			history.push(`/session/${sessionId}`)
 		}
-	}, [isValid])
-	// TODO: get sessionId from state / param in case they were forwarded from an incorrect Session
-	// TODO: reset form "isSubmitting" on joinError
+	}, [isValid, sessionId, history])
 
 	return (
 		<>
@@ -29,8 +28,23 @@ const Join = () => {
 					}
 					return errors
 				}}
-				onSubmit={values => {
-					dispatch(joinSession(values.sessionId))
+				onSubmit={(values, { setSubmitting }) => {
+					setSessionError(null)
+					myFirebase
+						.database()
+						.ref(`sessions/${values.sessionId.toUpperCase()}`)
+						.once('value')
+						.then(snapshot => {
+							if (snapshot.exists()) {
+								setSessionId(values.sessionId.toUpperCase())
+								setIsValid(true)
+							} else {
+								setSessionId(null)
+								setIsValid(false)
+								setSessionError('Session not found')
+								setSubmitting(false)
+							}
+						})
 				}}
 			>
 				{({ isSubmitting }) => (

@@ -67,6 +67,7 @@ const NavbarAuth = () => {
 				Logout
 			</button>
 			<span>{username}</span>
+			<NavLink to="/profile">Profile</NavLink>
 		</>
 	)
 }
