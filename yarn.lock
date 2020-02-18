@@ -6236,7 +6236,7 @@ istanbul-reports@^2.2.6:
 
 "jarvis9940-components@https://github.com/nomadjsdev/jarvis-9940-components#master":
   version "1.0.5"
-  resolved "https://github.com/nomadjsdev/jarvis-9940-components#a2d60b20b6169fe4d92ecc7c248490fa4798c2c5"
+  resolved "https://github.com/nomadjsdev/jarvis-9940-components#c985eede048107095f80e98d3a45f0e999376c87"
   dependencies:
     "@testing-library/jest-dom" "^4.2.4"
     "@testing-library/react" "^9.3.2"

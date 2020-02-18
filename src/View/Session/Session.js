@@ -255,6 +255,17 @@ const Session = () => {
 			})
 	}
 
+	const handleGroup = itemId => {
+		return buttonId => {
+			myFirebase
+				.database()
+				.ref(`sessions/${sessionId}`)
+				.update({
+					layout: { ...layoutVal, [itemId]: buttonId === 'reset' ? false : buttonId },
+				})
+		}
+	}
+
 	useEffect(() => {
 		if (messageVal || messageVal === '') {
 			if (messageVal === '') {
@@ -541,12 +552,7 @@ const Session = () => {
 																		orientation={item.direction}
 																		buttons={item.buttons}
 																		active={layoutVal[item.id] || ''}
-																		click={buttonId => {
-																			myFirebase
-																				.database()
-																				.ref(`sessions/${sessionId}`)
-																				.update({ layout: { ...layoutVal, [item.id]: buttonId } })
-																		}}
+																		click={handleGroup(item.id)}
 																	/>
 																</div>
 															)
