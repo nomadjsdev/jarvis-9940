@@ -217,23 +217,14 @@ const Session = () => {
 		// TODO: Reset button states?
 	}
 
-	const handleStart = () => {
-		// Stop any running timer
-		clearInterval(messageTimer.current)
-
-		const timestamp = Math.floor(Date.now() / 1000)
+	const handleToggle = buttonId => {
 		myFirebase
 			.database()
 			.ref(`sessions/${sessionId}`)
-			.update({
-				message: [
-					{ text: 'Start in', time: timestamp + 6, showTime: true },
-					{ text: 'GO!', time: timestamp + 11 },
-				],
-			})
+			.update({ layout: { ...layoutVal, [buttonId]: !layoutVal[buttonId] } })
 	}
 
-	const handleWipe = () => {
+	const handleMessage = message => {
 		// Stop any timers
 		clearInterval(messageTimer.current)
 
@@ -241,14 +232,27 @@ const Session = () => {
 		myFirebase
 			.database()
 			.ref(`sessions/${sessionId}`)
-			.update({ message: [{ text: 'WIPE!', time: 0 }] })
+			.update({ message: [{ text: message, time: 0 }] })
 	}
 
-	const handleToggle = buttonId => {
+	const handleTimer = messages => {
+		// Stop any running timer
+		clearInterval(messageTimer.current)
+
+		let timestamp = Math.floor(Date.now() / 1000)
+
+		let messageArray = []
+		for (let element of messages) {
+			timestamp = timestamp + element.time
+			messageArray.push({ text: element.message, time: timestamp, showTime: element.showTime })
+		}
+
 		myFirebase
 			.database()
 			.ref(`sessions/${sessionId}`)
-			.update({ layout: { ...layoutVal, [buttonId]: !layoutVal[buttonId] } })
+			.update({
+				message: messageArray,
+			})
 	}
 
 	useEffect(() => {
@@ -445,7 +449,10 @@ const Session = () => {
 							<button
 								type="button"
 								onClick={() => {
-									handleStart()
+									handleTimer([
+										{ message: 'Start in', time: 5, showTime: true },
+										{ message: 'GO!', time: 5, showTime: false },
+									])
 								}}
 							>
 								Start
@@ -465,7 +472,7 @@ const Session = () => {
 							<button
 								type="button"
 								onClick={() => {
-									handleWipe()
+									handleMessage('WIPE!')
 								}}
 							>
 								Wipe
@@ -534,9 +541,13 @@ const Session = () => {
 																		orientation={item.direction}
 																		buttons={item.buttons}
 																		active={layoutVal[item.id] || ''}
-																	>
-																		GROUP
-																	</ButtonGroup>
+																		click={buttonId => {
+																			myFirebase
+																				.database()
+																				.ref(`sessions/${sessionId}`)
+																				.update({ layout: { ...layoutVal, [item.id]: buttonId } })
+																		}}
+																	/>
 																</div>
 															)
 														}
@@ -544,7 +555,13 @@ const Session = () => {
 														if (item.type === 'message') {
 															return (
 																<div key={item.id}>
-																	<MessageButton>{item.text}</MessageButton>
+																	<MessageButton
+																		onClick={() => {
+																			handleMessage(item.message)
+																		}}
+																	>
+																		{item.text}
+																	</MessageButton>
 																</div>
 															)
 														}
@@ -552,7 +569,15 @@ const Session = () => {
 														if (item.type === 'timer') {
 															return (
 																<div key={item.id}>
-																	<TimerButton>{item.text}</TimerButton>
+																	<TimerButton
+																		onClick={() => {
+																			handleTimer([
+																				{ message: item.message, time: item.time, showTime: item.showTime ?? false },
+																			])
+																		}}
+																	>
+																		{item.text}
+																	</TimerButton>
 																</div>
 															)
 														}
