@@ -10,7 +10,7 @@ const PasswordReset = () => {
 	const resetError = useSelector(state => state.auth.resetError)
 
 	return (
-		<>
+		<React.Fragment>
 			<h1>PasswordReset</h1>
 			<Formik
 				initialValues={{ email: '' }}
@@ -51,7 +51,7 @@ const PasswordReset = () => {
 			<p>
 				Know your password? <Link to="/login">Login here.</Link>
 			</p>
-		</>
+		</React.Fragment>
 	)
 }
 

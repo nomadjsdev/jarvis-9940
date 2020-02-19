@@ -1,18 +1,35 @@
-import React from 'react'
-import { NavLink } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { logoutUser } from 'Store/Feature/auth'
 import useLocalUsername from 'Hook/useLocalUsername'
 
+import { Container, Menu, StyledNavLink, MenuButton } from './Navbar.styles'
+
 const Navbar = () => {
 	const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
+	const [menuIsOpen, setMenuIsOpen] = useState(false)
+	let location = useLocation()
+	useEffect(() => {
+		setMenuIsOpen(false)
+	}, [location])
 
 	return (
-		<>
-			<NavLink to="/">Home</NavLink> | <NavLink to="/join">Join session</NavLink> |{' '}
-			{isAuthenticated ? <NavbarAuth /> : <NavbarDefault />}
-		</>
+		<Container menuIsOpen={menuIsOpen}>
+			<MenuButton
+				onClick={() => {
+					setMenuIsOpen(!menuIsOpen)
+				}}
+			>
+				{menuIsOpen ? 'Close' : 'Menu'}
+			</MenuButton>
+			<Menu menuIsOpen={menuIsOpen}>
+				<StyledNavLink to="/">Home</StyledNavLink>
+				<StyledNavLink to="/join">Join session</StyledNavLink>
+				{isAuthenticated ? <NavbarAuth /> : <NavbarDefault />}
+			</Menu>
+		</Container>
 	)
 }
 
@@ -21,7 +38,8 @@ const NavbarDefault = () => {
 
 	return (
 		<>
-			<NavLink to="/register">Register</NavLink> | <NavLink to="/login">Login</NavLink>
+			<StyledNavLink to="/register">Register</StyledNavLink>
+			<StyledNavLink to="/login">Login</StyledNavLink>
 			{localUsername && (
 				<>
 					<span>{localUsername}</span>{' '}
@@ -57,7 +75,7 @@ const NavbarAuth = () => {
 
 	return (
 		<>
-			<NavLink to="/create">Create new session</NavLink> |
+			<StyledNavLink to="/create">Create new session</StyledNavLink> |
 			<button
 				type="button"
 				onClick={() => {
@@ -67,7 +85,7 @@ const NavbarAuth = () => {
 				Logout
 			</button>
 			<span>{username}</span>
-			<NavLink to="/profile">Profile</NavLink>
+			<StyledNavLink to="/profile">Profile</StyledNavLink>
 		</>
 	)
 }

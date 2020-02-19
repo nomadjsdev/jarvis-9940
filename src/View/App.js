@@ -1,80 +1,68 @@
 import React from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { Normalize } from 'styled-normalize'
 
 import Home from 'View/Home'
 import Register from 'View/Register'
 import PasswordReset from 'View/PasswordReset'
 import Login from 'View/Login'
 import Session from 'View/Session'
-import Create from 'View/Session/Create'
-import Join from 'View/Session/Join'
+import Create from 'View/Create'
+import Join from 'View/Join'
 import Profile from 'View/Profile'
 
+import { LoadingContainer, LoadingIcon } from 'Component/Global/Loading'
 import Navbar from 'Component/Navbar'
+
+import { Global } from 'Styles/Global.styles'
+import { MainDiv, Container } from './App.styles'
 
 const App = () => {
 	const { isLoggingIn, isLoggingOut, isVerifying, isAuthenticated } = useSelector(state => state.auth)
 	const { isCreating, isLoading } = useSelector(state => state.user)
 
-	if (isLoggingIn) {
+	if (isLoggingIn || isLoggingOut || isVerifying || isCreating || isLoading) {
 		return (
-			<>
-				<h1>Logging in</h1>
-			</>
-		)
-	}
-	if (isLoggingOut) {
-		return (
-			<>
-				<h1>Logging out</h1>
-			</>
-		)
-	}
-	if (isVerifying) {
-		return (
-			<>
-				<h1>Verifying</h1>
-			</>
-		)
-	}
-	if (isCreating) {
-		return (
-			<>
-				<h1>Creating user</h1>
-			</>
-		)
-	}
-	if (isLoading) {
-		return (
-			<>
-				<h1>Loading</h1>
-			</>
+			<React.Fragment>
+				<Normalize />
+				<LoadingContainer>
+					<LoadingIcon />
+				</LoadingContainer>
+			</React.Fragment>
 		)
 	}
 
 	return (
-		<Router>
-			<Navbar />
-			<Switch>
-				<Route path="/register">{isAuthenticated ? <Redirect to="/" /> : <Register />}</Route>
-				<Route path="/passwordreset">{isAuthenticated ? <Redirect to="/" /> : <PasswordReset />}</Route>
-				<Route path="/login">{isAuthenticated ? <Redirect to="/" /> : <Login />}</Route>
-				<Route path="/session/:sessionId?">
-					<Session /> {/* TODO: Checking whether logged in or has username set should happen here or on page? */}
-				</Route>
-				<Route path="/create">{isAuthenticated ? <Create /> : <Redirect to="/login" />}</Route>
-				<Route path="/join">
-					<Join /> {/* TODO: Checking whether logged in or has username set should happen here or on page? */}
-				</Route>
-				<Route path="/profile">
-					<Profile />
-				</Route>
-				<Route path="/" exact>
-					<Home />
-				</Route>
-			</Switch>
-		</Router>
+		<React.Fragment>
+			<Normalize />
+			<Global />
+			<MainDiv>
+				<Router>
+					<Navbar />
+					<Container>
+						<Switch>
+							<Route path="/register">{isAuthenticated ? <Redirect to="/" /> : <Register />}</Route>
+							<Route path="/passwordreset">{isAuthenticated ? <Redirect to="/" /> : <PasswordReset />}</Route>
+							<Route path="/login">{isAuthenticated ? <Redirect to="/" /> : <Login />}</Route>
+							<Route path="/session/:sessionId?">
+								<Session /> {/* TODO: Checking whether logged in or has username set should happen here or on page? */}
+							</Route>
+							<Route path="/create">{isAuthenticated ? <Create /> : <Redirect to="/login" />}</Route>
+							<Route path="/join">
+								<Join /> {/* TODO: Checking whether logged in or has username set should happen here or on page? */}
+							</Route>
+							<Route path="/profile">
+								<Profile />
+							</Route>
+							<Route path="/" exact>
+								<Home />
+							</Route>
+						</Switch>
+					</Container>
+				</Router>
+			</MainDiv>
+		</React.Fragment>
 	)
 }
 

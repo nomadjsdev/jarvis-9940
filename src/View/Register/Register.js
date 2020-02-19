@@ -72,6 +72,9 @@ const Register = () => {
 			<p>
 				Forgot your password? <Link to="/passwordreset">Reset it here.</Link>
 			</p>
+			<p>
+				Want to join a session without registering? <Link to="/join">Go for it!</Link>
+			</p>
 		</>
 	)
 }
