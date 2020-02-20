@@ -1,5 +1,7 @@
 import styled from 'styled-components'
 
+import { colors } from 'Styles'
+
 export const ModalContainer = styled.div`
 	position: fixed; /* Stay in place */
 	z-index: 1; /* Sit on top */
@@ -13,8 +15,8 @@ export const ModalContainer = styled.div`
 `
 
 export const ModalContents = styled.div`
-	background-color: #fefefe;
-	margin: 15% auto; /* 15% from the top and centered */
+	background-color: ${colors.background};
+	margin: 20% auto; /* 20% from the top and centered */
 	padding: 20px;
 	border: 1px solid #888;
 	width: 80%; /* Could be more or less; depending on screen size */

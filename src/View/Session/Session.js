@@ -6,6 +6,8 @@ import { ToggleButton, MessageButton, TimerButton, ButtonGroup } from 'jarvis994
 import myFirebase from 'Service/Firebase'
 
 import { ModalContainer, ModalContents } from 'Component/Global/Modal'
+import { LoadingContainer, LoadingIcon } from 'Component/Global/Loading'
+import { colors } from 'Styles'
 
 const Session = () => {
 	// TODO: Cache static values like activity / encounter / game name
@@ -307,51 +309,53 @@ const Session = () => {
 	// TODO: Return early?
 	if (isLoading) {
 		return (
-			<>
-				<h1>Loading session...</h1>
-			</>
+			<React.Fragment>
+				<LoadingContainer>
+					<LoadingIcon />
+				</LoadingContainer>
+			</React.Fragment>
 		)
 	}
 
 	if (sessionId && !isValid && !isLoading) {
 		return (
-			<>
+			<React.Fragment>
 				<h1>Session ID isn't valid</h1>
-			</>
+			</React.Fragment>
 		)
 	}
 
 	if (!sessionId) {
 		return (
-			<>
+			<React.Fragment>
 				<h1>Session ID is required</h1>
 				<p>
 					<Link to="/join">Join an existing session</Link>
 				</p>
 				<p>or</p>
 				{isAuthenticated && (
-					<>
+					<React.Fragment>
 						<p>
 							<Link to="/create">Create a new session</Link>
 						</p>
-					</>
+					</React.Fragment>
 				)}
 				{!isAuthenticated && (
-					<>
+					<React.Fragment>
 						<p>
 							<Link to="/login">login</Link> to create a new session
 						</p>
 						<p>
 							No account? <Link to="/register">Register now to create sessions</Link>
 						</p>
-					</>
+					</React.Fragment>
 				)}
-			</>
+			</React.Fragment>
 		)
 	}
 
 	return (
-		<>
+		<React.Fragment>
 			{/* TODO: styling for modals */}
 			{readyCheckVal && readyCheckVal.active && (
 				<ModalContainer>
@@ -405,11 +409,13 @@ const Session = () => {
 				<ModalContainer>
 					<ModalContents>
 						<div>
-							<h3>Change encounter modal</h3>
-							{activityEncounters.map(encounter => (
-								<div key={encounter}>
+							<h3 style={{ textAlign: 'center' }}>Change encounter</h3>
+							<div>
+								{activityEncounters.map(encounter => (
 									<button
+										key={encounter}
 										type="button"
+										style={{ border: '1px solid white', borderRadius: '10px', padding: '7px 15px', margin: '10px' }}
 										onClick={() => {
 											setChangeEncounter(false)
 											handleChangeEncounter(encounter)
@@ -417,10 +423,17 @@ const Session = () => {
 									>
 										{encounters[encounter].name}
 									</button>
-								</div>
-							))}
+								))}
+							</div>
 							<button
 								type="button"
+								style={{
+									border: '1px solid white',
+									borderRadius: '10px',
+									padding: '7px 15px',
+									margin: '10px',
+									backgroundColor: colors.red,
+								}}
 								onClick={() => {
 									setChangeEncounter(false)
 								}}
@@ -431,34 +444,29 @@ const Session = () => {
 					</ModalContents>
 				</ModalContainer>
 			)}
-			<div style={{ display: 'flex', flexDirection: 'row' }}>
-				<div style={{ padding: '0 20px' }}>
-					<h2>{gameName}</h2>
+			<div style={{ display: 'flex', flexFlow: 'row nowrap', justifyContent: 'space-between' }}>
+				<div style={{ flexBasis: '40%' }}>
+					<p>{gameName}</p>
+					<p>{activityName}</p>
 				</div>
-				<div style={{ padding: '0 20px' }}>
-					<h2>{activityName}</h2>
-				</div>
-				<div style={{ padding: '0 20px' }}>
-					{uid !== ownerIdVal && <h2>{encounterName}</h2>}
-					{uid === ownerIdVal && (
-						<button
-							type="button"
-							onClick={() => {
-								setChangeEncounter(true)
-							}}
-						>
-							{encounterName}
-						</button>
-					)}
+				<div style={{ flexBasis: '40%' }}>
+					<p>Session ID:</p>
+					<p>{sessionId}</p>
 				</div>
 			</div>
 			{uid === ownerIdVal && (
-				<div style={{ width: '300px' }}>
-					<h3>Admin menu</h3>
-					<div style={{ display: 'flex', flexFlow: 'row wrap' }}>
+				<div style={{ width: '100%' }}>
+					<div style={{ display: 'flex', flexFlow: 'row nowrap', marginBottom: '10px' }}>
 						<div style={{ flexBasis: '50%' }}>
 							<button
 								type="button"
+								style={{
+									border: '1px solid white',
+									borderRadius: '10px',
+									padding: '7px 15px',
+									width: '100%',
+									backgroundColor: colors.green,
+								}}
 								onClick={() => {
 									handleTimer([
 										{ message: 'Start in', time: 5, showTime: true },
@@ -472,6 +480,13 @@ const Session = () => {
 						<div style={{ flexBasis: '50%' }}>
 							<button
 								type="button"
+								style={{
+									border: '1px solid white',
+									borderRadius: '10px',
+									padding: '7px 15px',
+									width: '100%',
+									backgroundColor: colors.yellow,
+								}}
 								onClick={() => {
 									handleReset()
 								}}
@@ -479,9 +494,19 @@ const Session = () => {
 								Reset
 							</button>
 						</div>
+					</div>
+					<div style={{ display: 'flex', flexFlow: 'row nowrap', marginTop: '10px' }}>
 						<div style={{ flexBasis: '50%' }}>
 							<button
 								type="button"
+								style={{
+									border: '1px solid white',
+									borderRadius: '10px',
+									padding: '7px 15px',
+									width: '100%',
+									color: colors.primaryText,
+									backgroundColor: colors.red,
+								}}
 								onClick={() => {
 									handleMessage('WIPE!')
 								}}
@@ -492,6 +517,14 @@ const Session = () => {
 						<div style={{ flexBasis: '50%' }}>
 							<button
 								type="button"
+								style={{
+									border: '1px solid white',
+									borderRadius: '10px',
+									padding: '7px 15px',
+									width: '100%',
+									color: colors.primaryText,
+									backgroundColor: colors.blue,
+								}}
 								onClick={() => {
 									handleReadyCheck(true)
 								}}
@@ -500,26 +533,54 @@ const Session = () => {
 							</button>
 						</div>
 					</div>
+					{uid === ownerIdVal && (
+						<div style={{ marginTop: '10px' }}>
+							<button
+								type="button"
+								style={{
+									border: '1px solid white',
+									borderRadius: '10px',
+									padding: '7px 15px',
+									width: '100%',
+									color: colors.primaryText,
+									backgroundColor: colors.background,
+								}}
+								onClick={() => {
+									setChangeEncounter(true)
+								}}
+							>
+								Change encounter
+							</button>
+						</div>
+					)}
 				</div>
 			)}
-			<div>
-				<h3>Message section</h3>
-				{displayMessage && <h3>{displayMessage}</h3>}
+			<div
+				style={{
+					width: '100%',
+					border: '1px solid white',
+					borderRadius: '5px',
+					textAlign: 'center',
+					margin: '10px 0',
+				}}
+			>
+				{displayMessage && <h3 style={{ margin: '0.75em' }}>{displayMessage}</h3>}
+				{!displayMessage && <h3 style={{ margin: '0.75em' }}>{encounterName}</h3>}
 			</div>
 			<div>
 				{encounterVal && !encounterTemplates && (
-					<>
+					<React.Fragment>
 						<h3>Loading templates</h3>
-					</>
+					</React.Fragment>
 				)}
 				{encounterVal && encounterTemplates && !encounterTemplates[encounterVal] && (
-					<>
+					<React.Fragment>
 						<h3>No template found for {encounterName}</h3>
-					</>
+					</React.Fragment>
 				)}
 				{encounterVal && encounterTemplates?.[encounterVal] && (
-					<>
-						<div style={{ width: '75%', border: '1px solid green', padding: '20px' }}>
+					<React.Fragment>
+						<div style={{ width: '100%', border: '1px solid green' }}>
 							{encounterTemplates[encounterVal].map((row, rowIndex) => {
 								return (
 									<div
@@ -529,7 +590,6 @@ const Session = () => {
 											flexFlow: 'row nowrap',
 											justifyContent: 'space-between',
 											border: '1px solid red',
-											padding: '20px',
 										}}
 									>
 										{row.map((col, colIndex) => {
@@ -541,26 +601,25 @@ const Session = () => {
 														flexFlow: 'column nowrap',
 														flexGrow: '1',
 														border: '1px solid goldenrod',
-														padding: '20px',
 													}}
 												>
 													{col.map(item => {
 														if (item.type === 'group') {
 															return (
-																<div key={item.id}>
+																<React.Fragment key={item.id}>
 																	<ButtonGroup
 																		orientation={item.direction}
 																		buttons={item.buttons}
 																		active={layoutVal[item.id] || ''}
 																		click={handleGroup(item.id)}
 																	/>
-																</div>
+																</React.Fragment>
 															)
 														}
 
 														if (item.type === 'message') {
 															return (
-																<div key={item.id}>
+																<React.Fragment key={item.id}>
 																	<MessageButton
 																		onClick={() => {
 																			handleMessage(item.message)
@@ -568,13 +627,13 @@ const Session = () => {
 																	>
 																		{item.text}
 																	</MessageButton>
-																</div>
+																</React.Fragment>
 															)
 														}
 
 														if (item.type === 'timer') {
 															return (
-																<div key={item.id}>
+																<React.Fragment key={item.id}>
 																	<TimerButton
 																		onClick={() => {
 																			handleTimer([
@@ -584,12 +643,12 @@ const Session = () => {
 																	>
 																		{item.text}
 																	</TimerButton>
-																</div>
+																</React.Fragment>
 															)
 														}
 
 														return (
-															<div key={item.id}>
+															<React.Fragment key={item.id}>
 																<ToggleButton
 																	id={item.id}
 																	active={layoutVal[item.id]}
@@ -599,7 +658,7 @@ const Session = () => {
 																>
 																	{item.text}
 																</ToggleButton>
-															</div>
+															</React.Fragment>
 														)
 													})}
 												</div>
@@ -609,11 +668,11 @@ const Session = () => {
 								)
 							})}
 						</div>
-					</>
+					</React.Fragment>
 				)}
 			</div>
 			{sessionError && <div>{sessionError}</div>}
-		</>
+		</React.Fragment>
 	)
 }
 

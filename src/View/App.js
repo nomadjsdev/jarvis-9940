@@ -42,9 +42,9 @@ const App = () => {
 					<Navbar />
 					<Container>
 						<Switch>
-							<Route path="/register">{isAuthenticated ? <Redirect to="/" /> : <Register />}</Route>
-							<Route path="/passwordreset">{isAuthenticated ? <Redirect to="/" /> : <PasswordReset />}</Route>
-							<Route path="/login">{isAuthenticated ? <Redirect to="/" /> : <Login />}</Route>
+							<Route path="/register">{isAuthenticated ? <Redirect to="/profile" /> : <Register />}</Route>
+							<Route path="/passwordreset">{isAuthenticated ? <Redirect to="/profile" /> : <PasswordReset />}</Route>
+							<Route path="/login">{isAuthenticated ? <Redirect to="/profile" /> : <Login />}</Route>
 							<Route path="/session/:sessionId?">
 								<Session /> {/* TODO: Checking whether logged in or has username set should happen here or on page? */}
 							</Route>
@@ -52,9 +52,7 @@ const App = () => {
 							<Route path="/join">
 								<Join /> {/* TODO: Checking whether logged in or has username set should happen here or on page? */}
 							</Route>
-							<Route path="/profile">
-								<Profile />
-							</Route>
+							<Route path="/profile">{isAuthenticated ? <Profile /> : <Redirect to="/login" />}</Route>
 							<Route path="/" exact>
 								<Home />
 							</Route>

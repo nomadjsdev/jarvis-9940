@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { logoutUser } from 'Store/Feature/auth'
@@ -17,15 +17,19 @@ const Navbar = () => {
 
 	return (
 		<Container menuIsOpen={menuIsOpen}>
-			<MenuButton
-				onClick={() => {
-					setMenuIsOpen(!menuIsOpen)
-				}}
-			>
-				{menuIsOpen ? 'Close' : 'Menu'}
-			</MenuButton>
+			<div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap' }}>
+				<Link to="/">
+					<h2 style={{ marginLeft: '20px' }}>Jarvis 99-40</h2>
+				</Link>
+				<MenuButton
+					onClick={() => {
+						setMenuIsOpen(!menuIsOpen)
+					}}
+				>
+					{menuIsOpen ? 'Close' : 'Menu'}
+				</MenuButton>
+			</div>
 			<Menu menuIsOpen={menuIsOpen}>
-				<StyledNavLink to="/">Home</StyledNavLink>
 				<StyledNavLink to="/join">Join session</StyledNavLink>
 				{isAuthenticated ? <NavbarAuth /> : <NavbarDefault />}
 			</Menu>
@@ -75,7 +79,7 @@ const NavbarAuth = () => {
 
 	return (
 		<>
-			<StyledNavLink to="/create">Create new session</StyledNavLink> |
+			<StyledNavLink to="/create">Create new session</StyledNavLink>
 			<button
 				type="button"
 				onClick={() => {

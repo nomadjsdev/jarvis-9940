@@ -22,7 +22,7 @@ export const createUser = (uid, email, username) => dispatch => {
 
 	myFirebase
 		.database()
-		.ref(`user/${uid}`)
+		.ref(`users/${uid}`)
 		.set(initialUserState)
 		.then(() => {
 			dispatch(receiveNewUser({ email, username }))
