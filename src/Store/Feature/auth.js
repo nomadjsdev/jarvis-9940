@@ -18,6 +18,8 @@ import {
 	resetError,
 } from 'Store/Slice/auth'
 
+import { receiveLocalUser } from 'Store/Slice/user'
+
 import { createUser, fetchUser, clearUser } from 'Store/Feature/user'
 
 export const registerUser = (email, password, username) => dispatch => {
@@ -45,6 +47,11 @@ export const verifyAuth = () => dispatch => {
 	const localUser = JSON.parse(localStorage.getItem('authUser'))
 	if (localUser) {
 		dispatch(receiveLocalAuth(localUser))
+	}
+
+	const localUsername = localStorage.getItem('localUsername')
+	if (localUsername) {
+		dispatch(receiveLocalUser(localUsername))
 	}
 
 	myFirebase.auth().onAuthStateChanged(user => {

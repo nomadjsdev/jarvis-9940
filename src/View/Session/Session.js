@@ -5,6 +5,7 @@ import { ToggleButton, MessageButton, TimerButton, ButtonGroup } from 'jarvis994
 
 import myFirebase from 'Service/Firebase'
 
+import LocalUsernameForm from 'Component/LocalUsernameForm'
 import { ModalContainer, ModalContents } from 'Component/Global/Modal'
 import { LoadingContainer, LoadingIcon } from 'Component/Global/Loading'
 import { colors } from 'Styles'
@@ -17,9 +18,14 @@ const Session = () => {
 	// TODO: Setup multiple websocket connections for data / chat etc
 	const { sessionId } = useParams()
 	const isAuthenticated = useSelector(state => state.auth?.isAuthenticated)
+	const localUsername = useSelector(state => state.user.localUsername)
+
+	if (!isAuthenticated && !localUsername) {
+		return <LocalUsernameForm />
+	}
+
 	const uid = useSelector(state => state.auth?.user?.uid)
 	const username = useSelector(state => state.user?.details?.username)
-	const localUsername = localStorage.getItem('localUsername')
 
 	// FIXME: setIsLoading() is not working as intended
 	const [isLoading, setIsLoading] = useState(true)
@@ -137,7 +143,6 @@ const Session = () => {
 	useEffect(() => {
 		if (activityVal) {
 			setIsLoading(true)
-			// Fetch activity name
 			myFirebase
 				.database()
 				.ref(`activities/${activityVal}`)
@@ -152,7 +157,6 @@ const Session = () => {
 	useEffect(() => {
 		if (encounterVal) {
 			setIsLoading(true)
-			// Fetch encounter name
 			myFirebase
 				.database()
 				.ref(`encounters/${encounterVal}`)
@@ -167,7 +171,6 @@ const Session = () => {
 	useEffect(() => {
 		if (gameVal) {
 			setIsLoading(true)
-			// Fetch game name
 			myFirebase
 				.database()
 				.ref(`games/${gameVal}`)
@@ -180,7 +183,6 @@ const Session = () => {
 	}, [gameVal])
 
 	const handleChangeEncounter = encounterId => {
-		// Stop any timers
 		clearInterval(messageTimer.current)
 
 		myFirebase
@@ -190,7 +192,6 @@ const Session = () => {
 	}
 
 	const handleReadyCheck = checkActive => {
-		// Stop any timers
 		clearInterval(messageTimer.current)
 
 		myFirebase
@@ -207,7 +208,6 @@ const Session = () => {
 	}
 
 	const handleReset = () => {
-		// Stop any running timer
 		clearInterval(messageTimer.current)
 
 		myFirebase
@@ -227,7 +227,6 @@ const Session = () => {
 	}
 
 	const handleMessage = message => {
-		// Stop any timers
 		clearInterval(messageTimer.current)
 
 		// TODO: Disable buttons on wipe?
@@ -238,7 +237,6 @@ const Session = () => {
 	}
 
 	const handleTimer = messages => {
-		// Stop any running timer
 		clearInterval(messageTimer.current)
 
 		let timestamp = Math.floor(Date.now() / 1000)
@@ -306,7 +304,6 @@ const Session = () => {
 		}
 	}, [messageVal])
 
-	// TODO: Return early?
 	if (isLoading) {
 		return (
 			<React.Fragment>
@@ -356,7 +353,6 @@ const Session = () => {
 
 	return (
 		<React.Fragment>
-			{/* TODO: styling for modals */}
 			{readyCheckVal && readyCheckVal.active && (
 				<ModalContainer>
 					<ModalContents>

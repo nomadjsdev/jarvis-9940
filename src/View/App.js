@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux'
 import { Normalize } from 'styled-normalize'
 
 import Home from 'View/Home'
+import About from 'View/About'
 import Register from 'View/Register'
 import PasswordReset from 'View/PasswordReset'
 import Login from 'View/Login'
@@ -42,6 +43,9 @@ const App = () => {
 					<Navbar />
 					<Container>
 						<Switch>
+							<Route path="/about">
+								<About />
+							</Route>
 							<Route path="/register">{isAuthenticated ? <Redirect to="/profile" /> : <Register />}</Route>
 							<Route path="/passwordreset">{isAuthenticated ? <Redirect to="/profile" /> : <PasswordReset />}</Route>
 							<Route path="/login">{isAuthenticated ? <Redirect to="/profile" /> : <Login />}</Route>

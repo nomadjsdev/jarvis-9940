@@ -3,73 +3,72 @@ import { useLocation, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { logoutUser } from 'Store/Feature/auth'
-import useLocalUsername from 'Hook/useLocalUsername'
+import LocalUsernameForm from 'Component/LocalUsernameForm'
 
 import { Container, Menu, StyledNavLink, MenuButton } from './Navbar.styles'
 
 const Navbar = () => {
 	const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
+	const localUsername = useSelector(state => state.user.localUsername)
 	const [menuIsOpen, setMenuIsOpen] = useState(false)
 	let location = useLocation()
 	useEffect(() => {
 		setMenuIsOpen(false)
 	}, [location])
 
+	const [changeUsername, setChangeUsername] = useState(false)
+
 	return (
-		<Container menuIsOpen={menuIsOpen}>
-			<div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap' }}>
-				<Link to="/">
-					<h2 style={{ marginLeft: '20px' }}>Jarvis 99-40</h2>
-				</Link>
-				<MenuButton
-					onClick={() => {
-						setMenuIsOpen(!menuIsOpen)
-					}}
-				>
-					{menuIsOpen ? 'Close' : 'Menu'}
-				</MenuButton>
-			</div>
-			<Menu menuIsOpen={menuIsOpen}>
-				<StyledNavLink to="/join">Join session</StyledNavLink>
-				{isAuthenticated ? <NavbarAuth /> : <NavbarDefault />}
-			</Menu>
-		</Container>
+		<React.Fragment>
+			{changeUsername && <LocalUsernameForm />}
+			<Container menuIsOpen={menuIsOpen}>
+				<div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap' }}>
+					<Link to="/">
+						<h2 style={{ marginLeft: '20px' }}>Jarvis 99-40</h2>
+					</Link>
+					<MenuButton
+						onClick={() => {
+							setMenuIsOpen(!menuIsOpen)
+						}}
+					>
+						{menuIsOpen ? 'Close' : 'Menu'}
+					</MenuButton>
+				</div>
+				<Menu menuIsOpen={menuIsOpen}>
+					<StyledNavLink to="/join">Join session</StyledNavLink>
+					{isAuthenticated ? (
+						<NavbarAuth />
+					) : (
+						<React.Fragment>
+							<NavbarDefault />
+							{localUsername && (
+								<React.Fragment>
+									<span>{localUsername}</span>{' '}
+									<button
+										type="button"
+										onClick={() => {
+											setMenuIsOpen(false)
+											setChangeUsername(true)
+										}}
+									>
+										Change...
+									</button>
+								</React.Fragment>
+							)}
+						</React.Fragment>
+					)}
+				</Menu>
+			</Container>
+		</React.Fragment>
 	)
 }
 
 const NavbarDefault = () => {
-	const [localUsername, setLocalUsername] = useLocalUsername()
-
 	return (
-		<>
+		<React.Fragment>
 			<StyledNavLink to="/register">Register</StyledNavLink>
 			<StyledNavLink to="/login">Login</StyledNavLink>
-			{localUsername && (
-				<>
-					<span>{localUsername}</span>{' '}
-					<button
-						type="button"
-						onClick={() => {
-							setLocalUsername('Test2') //TODO: Bring in popup to handle name change
-						}}
-					>
-						Change...
-					</button>
-				</>
-			)}
-			{!localUsername && (
-				<>
-					<button
-						type="button"
-						onClick={() => {
-							setLocalUsername('Test')
-						}}
-					>
-						Set username
-					</button>
-				</>
-			)}
-		</>
+		</React.Fragment>
 	)
 }
 
@@ -78,7 +77,7 @@ const NavbarAuth = () => {
 	const username = useSelector(state => state.user?.details?.username)
 
 	return (
-		<>
+		<React.Fragment>
 			<StyledNavLink to="/create">Create new session</StyledNavLink>
 			<button
 				type="button"
@@ -90,7 +89,7 @@ const NavbarAuth = () => {
 			</button>
 			<span>{username}</span>
 			<StyledNavLink to="/profile">Profile</StyledNavLink>
-		</>
+		</React.Fragment>
 	)
 }
 

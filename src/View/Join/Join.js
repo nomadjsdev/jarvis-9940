@@ -5,11 +5,14 @@ import { useForm } from 'react-hook-form'
 
 import myFirebase from 'Service/Firebase'
 
+import LocalUsernameForm from 'Component/LocalUsernameForm'
 import { SubmitButton, FieldContainer, FieldWarning } from 'Component/Global/Form'
 
 const Join = () => {
 	let history = useHistory()
 	const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
+	const localUsername = useSelector(state => state.user.localUsername)
+
 	const [sessionError, setSessionError] = useState(null)
 	const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -19,7 +22,7 @@ const Join = () => {
 		setSessionError(null)
 	}, [errors?.sessionIdField])
 
-	const onSubmit = data => {
+	const sessionSubmit = data => {
 		setIsSubmitting(true)
 		const { sessionIdField } = data
 		setSessionError(null)
@@ -40,33 +43,38 @@ const Join = () => {
 
 	return (
 		<React.Fragment>
-			<h1>Join a session</h1>
 			<div style={{ display: 'flex', flexDirection: 'column', minHeight: '70vh' }}>
 				<div style={{ flex: '0 0 30%' }}>
-					<form onSubmit={handleSubmit(onSubmit)}>
-						<p>
-							<label htmlFor="sessionIdField">Enter the session ID</label>
-						</p>
-						<FieldContainer>
-							<input
-								type="text"
-								id="sessionIdField"
-								name="sessionIdField"
-								style={{ width: '100%', height: '30px' }}
-								ref={register({
-									required: { value: true, message: 'Session ID is required' },
-									minLength: { value: 6, message: 'Session ID should be 6 characters' },
-									maxLength: { value: 6, message: 'Session ID should be 6 characters' },
-								})}
-							/>
-							{errors?.sessionIdField?.message && <FieldWarning>!!</FieldWarning>}
-						</FieldContainer>
-						<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-							<SubmitButton type="submit" disabled={isSubmitting}>
-								Join
-							</SubmitButton>
-						</div>
-					</form>
+					{!isAuthenticated && !localUsername && <LocalUsernameForm />}
+					{(isAuthenticated || localUsername) && (
+						<React.Fragment>
+							<h1>Join a session</h1>
+							<form onSubmit={handleSubmit(sessionSubmit)}>
+								<p>
+									<label htmlFor="sessionIdField">Enter the session ID</label>
+								</p>
+								<FieldContainer>
+									<input
+										type="text"
+										id="sessionIdField"
+										name="sessionIdField"
+										style={{ width: '100%', height: '30px' }}
+										ref={register({
+											required: { value: true, message: 'Session ID is required' },
+											minLength: { value: 6, message: 'Session ID should be 6 characters' },
+											maxLength: { value: 6, message: 'Session ID should be 6 characters' },
+										})}
+									/>
+									{errors?.sessionIdField?.message && <FieldWarning>!!</FieldWarning>}
+								</FieldContainer>
+								<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+									<SubmitButton type="submit" disabled={isSubmitting}>
+										Join
+									</SubmitButton>
+								</div>
+							</form>
+						</React.Fragment>
+					)}
 				</div>
 				<div style={{ flex: '1 0 30%' }}>
 					<p style={{ color: 'red', fontWeight: 'bold' }}>

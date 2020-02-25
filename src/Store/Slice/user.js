@@ -7,6 +7,7 @@ const initialState = {
 	createUserError: false,
 	loadUserError: false,
 	clearUserError: false,
+	localUsername: null,
 	details: null,
 }
 
@@ -38,6 +39,13 @@ const userSlice = createSlice({
 			state.isLoading = false
 			state.loadUserError = action.payload
 		},
+		requestLocalUser(state, action) {
+			state.isLoading = true
+		},
+		receiveLocalUser(state, action) {
+			state.isLoading = false
+			state.localUsername = action.payload
+		},
 		requestClearUser(state, action) {
 			state.isClearing = true
 			state.clearUserError = false
@@ -60,6 +68,8 @@ export const {
 	requestLoadUser,
 	receiveLoadUser,
 	loadUserError,
+	requestLocalUser,
+	receiveLocalUser,
 	requestClearUser,
 	receiveClearUser,
 	clearUserError,

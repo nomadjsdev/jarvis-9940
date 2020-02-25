@@ -7,10 +7,24 @@ import {
 	requestLoadUser,
 	receiveLoadUser,
 	loadUserError,
+	requestLocalUser,
+	receiveLocalUser,
 	requestClearUser,
 	receiveClearUser,
 	// clearUserError,
 } from 'Store/Slice/user'
+
+export const fetchLocalUsername = () => dispatch => {
+	dispatch(requestLocalUser())
+	const localUsername = localStorage.getItem('localUsername')
+	dispatch(receiveLocalUser(localUsername))
+}
+
+export const setLocalUsername = username => dispatch => {
+	dispatch(requestLocalUser())
+	localStorage.setItem('localUsername', username)
+	dispatch(receiveLocalUser(username))
+}
 
 export const createUser = (uid, email, username) => dispatch => {
 	dispatch(requestNewUser())
@@ -45,10 +59,6 @@ export const fetchUser = uid => dispatch => {
 		.then(snapshot => {
 			dispatch(receiveLoadUser(snapshot.val()))
 			return snapshot.val()
-		})
-		.then(value => {
-			// Do clan / group fetching here?
-			// console.log(value)
 		})
 		.catch(error => {
 			console.log(error)
