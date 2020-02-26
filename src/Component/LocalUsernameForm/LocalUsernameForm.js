@@ -23,7 +23,7 @@ const LocalUsername = ({ modalIsOpen }) => {
 	return (
 		<ModalContainer>
 			<ModalContents>
-				<h1>Choose a temporary username</h1>
+				<h2>Choose a temporary username</h2>
 				<form onSubmit={handleSubmit(usernameSubmit)}>
 					<p>
 						<label htmlFor="usernameField">Username</label>

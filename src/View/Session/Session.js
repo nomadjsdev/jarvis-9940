@@ -10,7 +10,10 @@ import { ModalContainer, ModalContents } from 'Component/Global/Modal'
 import { LoadingContainer, LoadingIcon } from 'Component/Global/Loading'
 import { colors } from 'Styles'
 
+import useBreakpoint from 'Hook/useBreakpoint'
+
 const Session = () => {
+	const breakpoint = useBreakpoint()
 	// TODO: Cache static values like activity / encounter / game name
 	// TODO: ButtonGroup functions
 	// TODO / FIXME: SO MANY RENDERS
@@ -18,7 +21,8 @@ const Session = () => {
 	// TODO: Setup multiple websocket connections for data / chat etc
 	const { sessionId } = useParams()
 	const isAuthenticated = useSelector(state => state.auth?.isAuthenticated)
-	const localUsername = useSelector(state => state.user.localUsername)
+	const localUsername = useSelector(state => state.user?.localUsername)
+	const colorMode = useSelector(state => state.user?.colorMode)
 
 	if (!isAuthenticated && !localUsername) {
 		return <LocalUsernameForm />
@@ -356,87 +360,83 @@ const Session = () => {
 			{readyCheckVal && readyCheckVal.active && (
 				<ModalContainer>
 					<ModalContents>
+						<h3>Readycheck modal</h3>
+						{readyCheckVal.players && (
+							<div>
+								{Object.keys(readyCheckVal.players).map(player => (
+									<div key={player}>
+										<p style={{ color: readyCheckVal.players[player] ? 'green' : 'red' }}>{player}</p>
+									</div>
+								))}
+							</div>
+						)}
 						<div>
-							<h3>Readycheck modal</h3>
-							{readyCheckVal.players && (
-								<div>
-									{Object.keys(readyCheckVal.players).map(player => (
-										<div key={player}>
-											<p style={{ color: readyCheckVal.players[player] ? 'green' : 'red' }}>{player}</p>
-										</div>
-									))}
-								</div>
-							)}
+							<button
+								type="button"
+								onClick={() => {
+									submitReadyCheck(username ? username : localUsername, true)
+								}}
+							>
+								Ready
+							</button>
+							<button
+								type="button"
+								onClick={() => {
+									submitReadyCheck(username ? username : localUsername, false)
+								}}
+							>
+								Not ready
+							</button>
+						</div>
+						{uid === ownerIdVal && (
 							<div>
 								<button
 									type="button"
 									onClick={() => {
-										submitReadyCheck(username ? username : localUsername, true)
+										handleReadyCheck(false)
 									}}
 								>
-									Ready
-								</button>
-								<button
-									type="button"
-									onClick={() => {
-										submitReadyCheck(username ? username : localUsername, false)
-									}}
-								>
-									Not ready
+									Close readycheck
 								</button>
 							</div>
-							{uid === ownerIdVal && (
-								<div>
-									<button
-										type="button"
-										onClick={() => {
-											handleReadyCheck(false)
-										}}
-									>
-										Close readycheck
-									</button>
-								</div>
-							)}
-						</div>
+						)}
 					</ModalContents>
 				</ModalContainer>
 			)}
 			{changeEncounter && (
 				<ModalContainer>
 					<ModalContents>
+						<h3 style={{ textAlign: 'center' }}>Change encounter</h3>
 						<div>
-							<h3 style={{ textAlign: 'center' }}>Change encounter</h3>
-							<div>
-								{activityEncounters.map(encounter => (
-									<button
-										key={encounter}
-										type="button"
-										style={{ border: '1px solid white', borderRadius: '10px', padding: '7px 15px', margin: '10px' }}
-										onClick={() => {
-											setChangeEncounter(false)
-											handleChangeEncounter(encounter)
-										}}
-									>
-										{encounters[encounter].name}
-									</button>
-								))}
-							</div>
-							<button
-								type="button"
-								style={{
-									border: '1px solid white',
-									borderRadius: '10px',
-									padding: '7px 15px',
-									margin: '10px',
-									backgroundColor: colors.red,
-								}}
-								onClick={() => {
-									setChangeEncounter(false)
-								}}
-							>
-								Cancel
-							</button>
+							{activityEncounters.map(encounter => (
+								<button
+									key={encounter}
+									type="button"
+									style={{ border: '1px solid white', borderRadius: '10px', padding: '7px 15px', margin: '10px' }}
+									onClick={() => {
+										setChangeEncounter(false)
+										handleChangeEncounter(encounter)
+									}}
+								>
+									{encounters[encounter].name}
+								</button>
+							))}
 						</div>
+						<button
+							type="button"
+							style={{
+								border: '1px solid white',
+								borderRadius: '10px',
+								padding: '7px 15px',
+								margin: '10px',
+								backgroundColor: colors.red,
+							}}
+							onClick={() => {
+								setChangeEncounter(false)
+							}}
+						>
+							Cancel
+						</button>
 					</ModalContents>
 				</ModalContainer>
 			)}
@@ -576,7 +576,11 @@ const Session = () => {
 				)}
 				{encounterVal && encounterTemplates?.[encounterVal] && (
 					<React.Fragment>
-						<div style={{ width: '100%', border: '1px solid green' }}>
+						<div
+							style={{
+								width: '100%',
+							}}
+						>
 							{encounterTemplates[encounterVal].map((row, rowIndex) => {
 								return (
 									<div
@@ -585,7 +589,6 @@ const Session = () => {
 											display: 'flex',
 											flexFlow: 'row nowrap',
 											justifyContent: 'space-between',
-											border: '1px solid red',
 										}}
 									>
 										{row.map((col, colIndex) => {
@@ -596,7 +599,6 @@ const Session = () => {
 														display: 'flex',
 														flexFlow: 'column nowrap',
 														flexGrow: '1',
-														border: '1px solid goldenrod',
 													}}
 												>
 													{col.map(item => {
@@ -604,7 +606,10 @@ const Session = () => {
 															return (
 																<React.Fragment key={item.id}>
 																	<ButtonGroup
+																		size={breakpoint}
 																		orientation={item.direction}
+																		colorMode={colorMode}
+																		alignment={item.alignment}
 																		buttons={item.buttons}
 																		active={layoutVal[item.id] || ''}
 																		click={handleGroup(item.id)}
@@ -617,6 +622,9 @@ const Session = () => {
 															return (
 																<React.Fragment key={item.id}>
 																	<MessageButton
+																		size={breakpoint}
+																		colorMode={colorMode}
+																		alignment={item.alignment}
 																		onClick={() => {
 																			handleMessage(item.message)
 																		}}
@@ -631,6 +639,9 @@ const Session = () => {
 															return (
 																<React.Fragment key={item.id}>
 																	<TimerButton
+																		size={breakpoint}
+																		colorMode={colorMode}
+																		alignment={item.alignment}
 																		onClick={() => {
 																			handleTimer([
 																				{ message: item.message, time: item.time, showTime: item.showTime ?? false },
@@ -647,7 +658,10 @@ const Session = () => {
 															<React.Fragment key={item.id}>
 																<ToggleButton
 																	id={item.id}
+																	size={breakpoint}
 																	active={layoutVal[item.id]}
+																	colorMode={colorMode}
+																	alignment={item.alignment}
 																	onClick={() => {
 																		handleToggle(item.id)
 																	}}

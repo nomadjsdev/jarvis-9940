@@ -18,16 +18,20 @@ const ChangeColorSettings = ({ modalIsOpen }) => {
 	return (
 		<ModalContainer>
 			<ModalContents>
-				<h1>Colorblind mode</h1>
+				<h2>Colorblind mode</h2>
 				<div style={{ display: 'flex', flexFlow: 'row wrap' }}>
-					<ToggleButton active={false} style={{ flexBasis: '50%' }}>
+					<ToggleButton active={false} colorMode={colorMode} style={{ flexBasis: '50%' }}>
 						Inactive
 					</ToggleButton>
-					<ToggleButton active={true} style={{ flexBasis: '50%' }}>
+					<ToggleButton active={true} colorMode={colorMode} style={{ flexBasis: '50%' }}>
 						Active
 					</ToggleButton>
-					<MessageButton style={{ flexBasis: '50%' }}>Message</MessageButton>
-					<TimerButton style={{ flexBasis: '50%' }}>Timer</TimerButton>
+					<MessageButton colorMode={colorMode} style={{ flexBasis: '50%' }}>
+						Message
+					</MessageButton>
+					<TimerButton colorMode={colorMode} style={{ flexBasis: '50%' }}>
+						Timer
+					</TimerButton>
 				</div>
 				<div style={{ display: 'flex', flexFlow: 'column nowrap' }}>
 					<SubmitButton
