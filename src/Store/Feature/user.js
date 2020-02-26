@@ -9,6 +9,8 @@ import {
 	loadUserError,
 	requestLocalUser,
 	receiveLocalUser,
+	requestLocalColor,
+	receiveLocalColor,
 	requestClearUser,
 	receiveClearUser,
 	// clearUserError,
@@ -24,6 +26,18 @@ export const setLocalUsername = username => dispatch => {
 	dispatch(requestLocalUser())
 	localStorage.setItem('localUsername', username)
 	dispatch(receiveLocalUser(username))
+}
+
+export const fetchLocalColor = () => dispatch => {
+	dispatch(requestLocalColor())
+	const colorMode = localStorage.getItem('colorMode')
+	dispatch(receiveLocalColor(colorMode))
+}
+
+export const setLocalColor = colorMode => dispatch => {
+	dispatch(requestLocalColor())
+	localStorage.setItem('colorMode', colorMode)
+	dispatch(receiveLocalColor(colorMode))
 }
 
 export const createUser = (uid, email, username) => dispatch => {

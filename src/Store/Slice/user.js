@@ -8,6 +8,7 @@ const initialState = {
 	loadUserError: false,
 	clearUserError: false,
 	localUsername: null,
+	colorMode: null,
 	details: null,
 }
 
@@ -46,6 +47,13 @@ const userSlice = createSlice({
 			state.isLoading = false
 			state.localUsername = action.payload
 		},
+		requestLocalColor(state, action) {
+			state.isLoading = true
+		},
+		receiveLocalColor(state, action) {
+			state.isLoading = false
+			state.colorMode = action.payload
+		},
 		requestClearUser(state, action) {
 			state.isClearing = true
 			state.clearUserError = false
@@ -70,6 +78,8 @@ export const {
 	loadUserError,
 	requestLocalUser,
 	receiveLocalUser,
+	requestLocalColor,
+	receiveLocalColor,
 	requestClearUser,
 	receiveClearUser,
 	clearUserError,

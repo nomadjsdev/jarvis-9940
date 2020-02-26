@@ -17,7 +17,7 @@ export const ModalContainer = styled.div`
 export const ModalContents = styled.div`
 	background-color: ${colors.background};
 	margin: 20% auto; /* 20% from the top and centered */
-	padding: 20px;
+	padding: 0 20px;
 	border: 1px solid #888;
 	width: 80%; /* Could be more or less; depending on screen size */
 `

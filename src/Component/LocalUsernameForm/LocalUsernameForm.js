@@ -8,7 +8,7 @@ import { setLocalUsername } from 'Store/Feature/user'
 import { ModalContainer, ModalContents } from 'Component/Global/Modal'
 import { SubmitButton, FieldContainer, FieldWarning } from 'Component/Global/Form'
 
-const LocalUsername = () => {
+const LocalUsername = ({ modalIsOpen }) => {
 	const dispatch = useDispatch()
 	const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
 	const [isSubmitting, setIsSubmitting] = useState(false)
@@ -43,6 +43,14 @@ const LocalUsername = () => {
 						{errors?.usernameField?.message && <FieldWarning>!!</FieldWarning>}
 					</FieldContainer>
 					<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+						<SubmitButton
+							type="button"
+							onClick={() => {
+								modalIsOpen(false)
+							}}
+						>
+							Cancel
+						</SubmitButton>
 						<SubmitButton type="submit" disabled={isSubmitting}>
 							Submit
 						</SubmitButton>

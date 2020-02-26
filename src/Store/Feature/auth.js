@@ -18,7 +18,7 @@ import {
 	resetError,
 } from 'Store/Slice/auth'
 
-import { receiveLocalUser } from 'Store/Slice/user'
+import { receiveLocalUser, receiveLocalColor } from 'Store/Slice/user'
 
 import { createUser, fetchUser, clearUser } from 'Store/Feature/user'
 
@@ -52,6 +52,11 @@ export const verifyAuth = () => dispatch => {
 	const localUsername = localStorage.getItem('localUsername')
 	if (localUsername) {
 		dispatch(receiveLocalUser(localUsername))
+	}
+
+	const colorMode = localStorage.getItem('colorMode')
+	if (colorMode) {
+		dispatch(receiveLocalColor(colorMode))
 	}
 
 	myFirebase.auth().onAuthStateChanged(user => {

@@ -3,7 +3,9 @@ import { useLocation, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { logoutUser } from 'Store/Feature/auth'
+import { SubmitButton } from 'Component/Global/Form'
 import LocalUsernameForm from 'Component/LocalUsernameForm'
+import ChangeColorSettings from 'Component/ChangeColorSettings'
 
 import { Container, Menu, StyledNavLink, MenuButton } from './Navbar.styles'
 
@@ -17,10 +19,12 @@ const Navbar = () => {
 	}, [location])
 
 	const [changeUsername, setChangeUsername] = useState(false)
+	const [changeColorSettings, setChangeColorSettings] = useState(false)
 
 	return (
 		<React.Fragment>
-			{changeUsername && <LocalUsernameForm />}
+			{changeUsername && <LocalUsernameForm modalIsOpen={setChangeUsername} />}
+			{changeColorSettings && <ChangeColorSettings modalIsOpen={setChangeColorSettings} />}
 			<Container menuIsOpen={menuIsOpen}>
 				<div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap' }}>
 					<Link to="/">
@@ -44,19 +48,28 @@ const Navbar = () => {
 							{localUsername && (
 								<React.Fragment>
 									<span>{localUsername}</span>{' '}
-									<button
+									<SubmitButton
 										type="button"
 										onClick={() => {
 											setMenuIsOpen(false)
 											setChangeUsername(true)
 										}}
 									>
-										Change...
-									</button>
+										Change username
+									</SubmitButton>
 								</React.Fragment>
 							)}
 						</React.Fragment>
 					)}
+					<SubmitButton
+						type="button"
+						onClick={() => {
+							setMenuIsOpen(false)
+							setChangeColorSettings(true)
+						}}
+					>
+						Colorblind mode
+					</SubmitButton>
 				</Menu>
 			</Container>
 		</React.Fragment>

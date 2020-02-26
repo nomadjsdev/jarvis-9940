@@ -8,7 +8,7 @@ export const SubmitButton = styled.button`
 	border: 1px solid ${props => (props.active ? colors.background : colors.primaryText)};
 	border-radius: 5px;
 	height: 40px;
-	width: 100px;
+	min-width: 100px;
 	color: ${props => (props.active ? colors.background : colors.primaryText)};
 `
 
