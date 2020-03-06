@@ -7,48 +7,49 @@ import { SubmitButton } from 'Component/Global/Form'
 import LocalUsernameForm from 'Component/LocalUsernameForm'
 import ChangeColorSettings from 'Component/ChangeColorSettings'
 
-import { StyledNavLink, ButtonForMenu, MenuContainer } from './Navbar.styles'
+import LogoImg from 'Assets/Images/robot.64.png'
+import SettingsImg from 'Assets/Images/settings.64.png'
+import ProfileImg from 'Assets/Images/profile.64.png'
+
+import { StyledNavLink, MenuContainer, DropdownContainer } from './Navbar.styles'
 
 const Logo = () => (
 	<Link to="/">
-		<h2 style={{ marginLeft: '20px' }}>Jarvis 99-40</h2>
+		<img src={LogoImg} style={{ maxWidth: '50px', maxHeight: '50px', padding: '10px' }} />
+		{/* <h2 style={{ marginLeft: '20px' }}>Jarvis 99-40</h2> */}
 	</Link>
 )
 
-const Burgermenu = ({ menuIsOpen, handleClick }) => (
-	<ButtonForMenu onClick={handleClick}>
-		<div className={menuIsOpen ? 'open' : ''}>
-			<span>&nbsp;</span>
-			<span>&nbsp;</span>
-			<span>&nbsp;</span>
-		</div>
-	</ButtonForMenu>
-)
-
-const LocalUsername = ({ setChangeUsername }) => {
+const LocalUsername = () => {
 	const localUsername = useSelector(state => state.user.localUsername)
+	const [changeUsername, setChangeUsername] = useState(false)
 
 	return (
-		<div style={{ display: 'flex', flexFlow: 'row nowrap' }}>
-			{localUsername && <p style={{ padding: '0 20px' }}>{localUsername}</p>}
-			<SubmitButton
-				type="button"
-				style={{ flexGrow: 1 }}
-				onClick={() => {
-					setChangeUsername(true)
-				}}
-			>
-				{localUsername ? 'Change username' : 'Set username'}
-			</SubmitButton>
-		</div>
+		<React.Fragment>
+			{changeUsername && <LocalUsernameForm modalIsOpen={setChangeUsername} />}
+
+			<div style={{ display: 'flex', flexFlow: 'column nowrap' }}>
+				{localUsername && <p style={{ padding: '0 20px' }}>{localUsername}</p>}
+				<SubmitButton
+					type="button"
+					style={{ flexGrow: 1 }}
+					onClick={() => {
+						setChangeUsername(true)
+					}}
+				>
+					{localUsername ? 'Change username' : 'Set username'}
+				</SubmitButton>
+			</div>
+		</React.Fragment>
 	)
 }
 
-const ColorblindMode = ({ setChangeColorSettings }) => (
+const ColorblindMode = ({ setChangeColorSettings, setMenuIsOpen }) => (
 	<SubmitButton
 		type="button"
 		style={{ marginBottom: '10px' }}
 		onClick={() => {
+			setMenuIsOpen(null)
 			setChangeColorSettings(true)
 		}}
 	>
@@ -56,72 +57,99 @@ const ColorblindMode = ({ setChangeColorSettings }) => (
 	</SubmitButton>
 )
 
-const NavbarDefault = ({ setMenuIsOpen, setChangeUsername }) => (
-	<React.Fragment>
-		<StyledNavLink to="/register">Register</StyledNavLink>
-		<StyledNavLink to="/login">Login</StyledNavLink>
-		<LocalUsername setMenuIsOpen={setMenuIsOpen} setChangeUsername={setChangeUsername} />
-	</React.Fragment>
-)
+const SettingsIcon = ({ menuIsOpen, setMenuIsOpen }) => {
+	const [changeColorSettings, setChangeColorSettings] = useState(false)
 
-const NavbarAuth = () => {
+	return (
+		<React.Fragment>
+			{changeColorSettings && <ChangeColorSettings modalIsOpen={setChangeColorSettings} />}
+
+			<div style={{ display: 'flex', alignItems: 'center', position: 'relative', margin: '10px' }}>
+				<img
+					style={{ maxWidth: '40px', maxHeight: '40px' }}
+					src={SettingsImg}
+					onClick={() => {
+						setMenuIsOpen(prevState => (prevState === 'settings' ? null : 'settings'))
+					}}
+				/>
+				<DropdownContainer isOpen={menuIsOpen === 'settings'}>
+					<ColorblindMode setChangeColorSettings={setChangeColorSettings} setMenuIsOpen={setMenuIsOpen} />
+				</DropdownContainer>
+			</div>
+		</React.Fragment>
+	)
+}
+
+const ProfileIcon = ({ menuIsOpen, setMenuIsOpen, isAuthenticated }) => {
 	const dispatch = useDispatch()
 	const username = useSelector(state => state.user?.details?.username)
 
 	return (
-		<React.Fragment>
-			<StyledNavLink to="/create">Create new session</StyledNavLink>
-			<p style={{ padding: '0 20px' }}>{username}</p>
-			<SubmitButton
-				type="button"
+		<div style={{ display: 'flex', alignItems: 'center', position: 'relative', marginRight: '10px' }}>
+			<img
+				style={{ maxWidth: '40px', maxHeight: '40px' }}
+				src={ProfileImg}
 				onClick={() => {
-					dispatch(logoutUser())
+					setMenuIsOpen(prevState => (prevState === 'profile' ? null : 'profile'))
 				}}
-			>
-				Logout
-			</SubmitButton>
-			{/* <StyledNavLink to="/profile">Profile</StyledNavLink> */}
-		</React.Fragment>
+			/>
+			<DropdownContainer isOpen={menuIsOpen === 'profile'}>
+				{isAuthenticated && (
+					<React.Fragment>
+						<p style={{ padding: '0 20px' }}>{username}</p>
+						<SubmitButton
+							type="button"
+							onClick={() => {
+								dispatch(logoutUser())
+							}}
+						>
+							Logout
+						</SubmitButton>
+					</React.Fragment>
+				)}
+				{!isAuthenticated && (
+					<React.Fragment>
+						<StyledNavLink to="/register">Register</StyledNavLink>
+						<StyledNavLink to="/login">Login</StyledNavLink>
+						<LocalUsername />
+					</React.Fragment>
+				)}
+			</DropdownContainer>
+		</div>
 	)
 }
 
 export default () => {
 	const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
 
-	const [menuIsOpen, setMenuIsOpen] = useState(false)
-	const handleClick = () => {
-		setMenuIsOpen(!menuIsOpen)
-	}
-
+	const [menuIsOpen, setMenuIsOpen] = useState(null)
 	let location = useLocation()
 	useEffect(() => {
-		setMenuIsOpen(false)
+		setMenuIsOpen(null)
 	}, [location])
 
-	const [changeUsername, setChangeUsername] = useState(false)
-	const [changeColorSettings, setChangeColorSettings] = useState(false)
-
 	return (
-		<React.Fragment>
-			{changeUsername && <LocalUsernameForm modalIsOpen={setChangeUsername} />}
+		<div style={{ borderBottom: '1px solid' }}>
+			<div
+				style={{
+					display: 'flex',
+					flexFlow: 'row wrap',
+					justifyContent: 'space-between',
+					maxWidth: '1024px',
+					margin: '0 auto',
+				}}
+			>
+				<Logo />
 
-			{changeColorSettings && <ChangeColorSettings modalIsOpen={setChangeColorSettings} />}
+				<MenuContainer>
+					<StyledNavLink to="/join">Join</StyledNavLink>
+					{isAuthenticated && <StyledNavLink to="/create">Create</StyledNavLink>}
 
-			<div style={{ display: 'flex', flexFlow: 'row wrap', justifyContent: 'space-between', border: '1px solid' }}>
-				<div style={{}}>
-					<Logo />
-				</div>
-				<div style={{}}>
-					<Burgermenu menuIsOpen={menuIsOpen} handleClick={handleClick} />
-				</div>
-				<MenuContainer menuIsOpen={menuIsOpen}>
-					<StyledNavLink to="/join">Join session</StyledNavLink>
+					<SettingsIcon menuIsOpen={menuIsOpen} setMenuIsOpen={setMenuIsOpen} />
 
-					{isAuthenticated ? <NavbarAuth /> : <NavbarDefault setChangeUsername={setChangeUsername} />}
-
-					<ColorblindMode setChangeColorSettings={setChangeColorSettings} />
+					<ProfileIcon menuIsOpen={menuIsOpen} setMenuIsOpen={setMenuIsOpen} isAuthenticated={isAuthenticated} />
 				</MenuContainer>
 			</div>
-		</React.Fragment>
+		</div>
 	)
 }

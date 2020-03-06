@@ -14,6 +14,16 @@ const Footer = () => {
 			<p style={{ fontSize: '0.8em' }}>
 				Support can be found at <ExternalLink link="https://www.reddit.com/r/jarvis9940">/r/jarvis9940</ExternalLink>.
 			</p>
+			<p style={{ fontSize: '0.8em' }}>
+				Logo, settings, and profile icons made by{' '}
+				<ExternalLink link="https://www.flaticon.com/authors/freepik" title="Freepik">
+					Freepik
+				</ExternalLink>
+				from{' '}
+				<ExternalLink link="https://www.flaticon.com/" title="Flaticon">
+					www.flaticon.com
+				</ExternalLink>
+			</p>
 		</div>
 	)
 }
