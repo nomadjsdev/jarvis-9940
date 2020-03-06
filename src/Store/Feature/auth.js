@@ -22,6 +22,8 @@ import { receiveLocalUser, receiveLocalColor } from 'Store/Slice/user'
 
 import { createUser, fetchUser, clearUser } from 'Store/Feature/user'
 
+import { DEFAULT_COLOR_MODE } from 'Utils/Constants'
+
 export const registerUser = (email, password, username) => dispatch => {
 	dispatch(requestRegister())
 
@@ -54,7 +56,7 @@ export const verifyAuth = () => dispatch => {
 		dispatch(receiveLocalUser(localUsername))
 	}
 
-	const colorMode = localStorage.getItem('colorMode')
+	const colorMode = localStorage.getItem('colorMode') || DEFAULT_COLOR_MODE
 	if (colorMode) {
 		dispatch(receiveLocalColor(colorMode))
 	}

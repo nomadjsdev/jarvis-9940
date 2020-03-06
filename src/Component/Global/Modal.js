@@ -1,10 +1,11 @@
+import React from 'react'
 import styled from 'styled-components'
 
 import { colors } from 'Styles'
 
-export const ModalContainer = styled.div`
+const ModalContainer = styled.div`
 	position: fixed; /* Stay in place */
-	z-index: 1; /* Sit on top */
+	z-index: 5; /* Sit on top */
 	left: 0;
 	top: 0;
 	width: 100%; /* Full width */
@@ -14,10 +15,16 @@ export const ModalContainer = styled.div`
 	background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 `
 
-export const ModalContents = styled.div`
+const ModalContents = styled.div`
 	background-color: ${colors.background};
 	margin: 20% auto; /* 20% from the top and centered */
 	padding: 0 20px;
 	border: 1px solid #888;
 	width: 80%; /* Could be more or less; depending on screen size */
 `
+
+export default ({ children }) => (
+	<ModalContainer>
+		<ModalContents>{children}</ModalContents>
+	</ModalContainer>
+)

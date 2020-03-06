@@ -13,8 +13,9 @@ import Create from 'View/Create'
 import Join from 'View/Join'
 import Profile from 'View/Profile'
 
-import { LoadingContainer, LoadingIcon } from 'Component/Global/Loading'
+import Loading from 'Component/Global/Loading'
 import Navbar from 'Component/Navbar'
+import Footer from 'Component/Footer'
 
 import { Global } from 'Styles/Global.styles'
 import { MainDiv, Container } from './App.styles'
@@ -27,9 +28,8 @@ const App = () => {
 		return (
 			<React.Fragment>
 				<Normalize />
-				<LoadingContainer>
-					<LoadingIcon />
-				</LoadingContainer>
+				<Global />
+				<Loading loadingMessage="Checking latest version" />
 			</React.Fragment>
 		)
 	}
@@ -46,9 +46,9 @@ const App = () => {
 							<Route path="/about">
 								<About />
 							</Route>
-							<Route path="/register">{isAuthenticated ? <Redirect to="/profile" /> : <Register />}</Route>
-							<Route path="/passwordreset">{isAuthenticated ? <Redirect to="/profile" /> : <PasswordReset />}</Route>
-							<Route path="/login">{isAuthenticated ? <Redirect to="/profile" /> : <Login />}</Route>
+							<Route path="/register">{isAuthenticated ? <Redirect to="/create" /> : <Register />}</Route>
+							<Route path="/passwordreset">{isAuthenticated ? <Redirect to="/create" /> : <PasswordReset />}</Route>
+							<Route path="/login">{isAuthenticated ? <Redirect to="/create" /> : <Login />}</Route>
 							<Route path="/session/:sessionId?">
 								<Session /> {/* TODO: Checking whether logged in or has username set should happen here or on page? */}
 							</Route>
@@ -61,6 +61,7 @@ const App = () => {
 								<Home />
 							</Route>
 						</Switch>
+						<Footer />
 					</Container>
 				</Router>
 			</MainDiv>

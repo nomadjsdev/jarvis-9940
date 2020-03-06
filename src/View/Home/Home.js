@@ -1,8 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { colors, typography } from 'Styles'
-
 import { MainHeader, SubHeader } from './Home.styles'
 
 const Home = () => {

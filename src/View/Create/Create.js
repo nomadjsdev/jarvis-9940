@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom'
 import myFirebase from 'Service/Firebase'
 
 import { SubmitButton } from 'Component/Global/Form'
-import { LoadingContainer, LoadingIcon } from 'Component/Global/Loading'
+import Loading from 'Component/Global/Loading'
 
 const Create = () => {
 	let history = useHistory()
@@ -194,13 +194,7 @@ const Create = () => {
 
 	return (
 		<React.Fragment>
-			{isCreating && (
-				<React.Fragment>
-					<LoadingContainer>
-						<LoadingIcon />
-					</LoadingContainer>
-				</React.Fragment>
-			)}
+			{isCreating && <Loading loadingMessage="Creating new session" />}
 			{!isCreating && (
 				<React.Fragment>
 					<h1>Create a new session</h1>

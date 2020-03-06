@@ -1,14 +1,16 @@
+// TODO: This is only used by Session for colHeight
+
 const getDeviceConfig = width => {
 	if (width < 330) {
-		return 'xs'
+		return { breakpoint: 'xs', colHeight: '100px' }
 	} else if (width >= 330 && width < 600) {
-		return 'sm'
+		return { breakpoint: 'sm', colHeight: '110px' }
 	} else if (width >= 600 && width < 900) {
-		return 'md'
+		return { breakpoint: 'md', colHeight: '120px' }
 	} else if (width >= 900 && width < 1200) {
-		return 'lg'
+		return { breakpoint: 'lg', colHeight: '120px' }
 	} else if (width >= 1200) {
-		return 'xl'
+		return { breakpoint: 'xl', colHeight: '140px' }
 	}
 }
 

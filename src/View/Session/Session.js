@@ -1,133 +1,94 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { ToggleButton, MessageButton, TimerButton, ButtonGroup } from 'jarvis9940-components'
+
+import { LAST_UPDATED } from 'Utils/Constants'
+import { getCacheItem, setCacheItem } from 'Utils/Cache'
+import { Fetch, Update } from 'Utils/Query'
 
 import myFirebase from 'Service/Firebase'
 
-import LocalUsernameForm from 'Component/LocalUsernameForm'
-import { ModalContainer, ModalContents } from 'Component/Global/Modal'
-import { LoadingContainer, LoadingIcon } from 'Component/Global/Loading'
-import { colors } from 'Styles'
-
 import useBreakpoint from 'Hook/useBreakpoint'
 
+import LocalUsernameForm from 'Component/LocalUsernameForm'
+import Loading from 'Component/Global/Loading'
+
+import AdminControls from './Components/AdminControls'
+import ChangeEncounter from './Components/ChangeEncounter'
+import Item from './Components/Item'
+import MessageDisplay from './Components/MessageDisplay'
+import ReadyCheck from './Components/ReadyCheck'
+import SessionDetails from './Components/SessionDetails'
+import SessionError from './Components/SessionError'
+
 const Session = () => {
-	const breakpoint = useBreakpoint()
-	// TODO: Cache static values like activity / encounter / game name
-	// TODO: ButtonGroup functions
 	// TODO / FIXME: SO MANY RENDERS
 	// TODO / FIXME: Too many useEffects fetching data in sequence
 	// TODO: Setup multiple websocket connections for data / chat etc
-	const { sessionId } = useParams()
+	// TODO: Use isActive when fetching data
+
+	const { sessionId = null } = useParams()
 	const isAuthenticated = useSelector(state => state.auth?.isAuthenticated)
+
+	if (!sessionId) {
+		return <SessionError isAuthenticated={isAuthenticated} />
+	}
+
 	const localUsername = useSelector(state => state.user?.localUsername)
-	const colorMode = useSelector(state => state.user?.colorMode)
 
 	if (!isAuthenticated && !localUsername) {
 		return <LocalUsernameForm />
 	}
 
+	const { colHeight } = useBreakpoint()
+
 	const uid = useSelector(state => state.auth?.user?.uid)
 	const username = useSelector(state => state.user?.details?.username)
+	const colorMode = useSelector(state => state.user?.colorMode)
 
-	// FIXME: setIsLoading() is not working as intended
 	const [isLoading, setIsLoading] = useState(true)
+	const [loadingMessage, setLoadingMessage] = useState(null)
+
 	const [isValid, setIsValid] = useState(false)
 	const [changeEncounter, setChangeEncounter] = useState(false)
 
 	const [activityVal, setActivityVal] = useState(null)
-	const [activityName, setActivityName] = useState(null)
-	const [activityEncounters, setActivityEncounters] = useState(null)
-	const [encounterTemplates, setEncounterTemplates] = useState(null)
 	const [encounterVal, setEncounterVal] = useState(null)
-	const [encounterName, setEncounterName] = useState(null)
-	const [encounters, setEncounters] = useState(null)
 	const [gameVal, setGameVal] = useState(null)
-	const [gameName, setGameName] = useState(null)
 	const [layoutVal, setLayoutVal] = useState(null)
 	const [messageVal, setMessageVal] = useState(null)
-	const [displayMessage, setDisplayMessage] = useState(null)
-	const [readyCheckVal, setReadyCheckVal] = useState(null)
 	const [ownerIdVal, setOwnerIdVal] = useState(null)
-
-	const [sessionError, setSessionError] = useState(null)
+	const [readyCheckVal, setReadyCheckVal] = useState(null)
+	const [gameName, setGameName] = useState(null)
+	const [activityName, setActivityName] = useState(null)
+	const [activityEncounters, setActivityEncounters] = useState(null)
+	const [encounters, setEncounters] = useState(null)
+	const [encounterTemplates, setEncounterTemplates] = useState(null)
+	const [displayMessage, setDisplayMessage] = useState(null)
 
 	// Preserve interval across renders
 	let messageTimer = useRef()
 
 	useEffect(() => {
-		if (gameVal && activityVal) {
-			setIsLoading(true)
-			// Fetch activity encounters
-			myFirebase
-				.database()
-				.ref(`activityEncounters/${activityVal}`)
-				.once('value')
-				.then(snapshot => {
-					setActivityEncounters(snapshot.val())
-				})
-				.catch(error => {
-					setSessionError(error.message)
-				})
-			setIsLoading(false)
-		}
-	}, [gameVal, activityVal])
-
-	useEffect(() => {
-		const run = async () => {
-			setIsLoading(true)
-			// Fetch encounter templates
-			let templateObject
-			let encounterObject
-			for (let encounter of activityEncounters) {
-				const encounterVal = await myFirebase
-					.database()
-					.ref(`encounters/${encounter}`)
-					.once('value')
-					.then(snapshot => snapshot.val())
-				if (encounterVal) {
-					encounterObject = { ...encounterObject, [encounter]: { name: encounterVal.name } }
-				}
-
-				const template = await myFirebase
-					.database()
-					.ref(`encounterTemplates/${encounter}`)
-					.once('value')
-					.then(snapshot => snapshot.val())
-
-				if (template) {
-					templateObject = { ...templateObject, [encounter]: template }
-				}
-			}
-			setEncounters(encounterObject)
-			setEncounterTemplates(templateObject)
-			setIsLoading(false)
-		}
-
-		if (activityEncounters) {
-			run()
-		}
-	}, [activityEncounters])
-
-	useEffect(() => {
 		let firebaseRef = myFirebase.database().ref(`sessions/${sessionId.toUpperCase()}`)
 		let listener
 		if (sessionId) {
+			setLoadingMessage('Connecting to session')
+
 			listener = firebaseRef.on('value', snapshot => {
 				if (snapshot.exists()) {
+					const { activity, encounter, game, layout, message, ownerId, readyCheck } = snapshot.val()
 					// TODO: `created timestamp` check
-					setIsLoading(false)
 					setIsValid(true)
-					const { activity, encounter, game, layout, message, readyCheck, startTimer, ownerId } = snapshot.val()
 					setActivityVal(activity)
 					setEncounterVal(encounter)
 					setGameVal(game)
 					setLayoutVal(layout)
 					setMessageVal(message)
-					setReadyCheckVal(readyCheck)
 					setOwnerIdVal(ownerId)
+					setReadyCheckVal(readyCheck)
 				} else {
+					firebaseRef.off('value', listener)
 					setIsLoading(false)
 					setIsValid(false)
 					setActivityVal(null)
@@ -135,141 +96,124 @@ const Session = () => {
 					setGameVal(null)
 					setLayoutVal(null)
 					setMessageVal(null)
-					setReadyCheckVal(null)
 					setOwnerIdVal(null)
+					setReadyCheckVal(null)
 				}
 			})
 		}
 
+		// Kill websocket connection on unmount
 		return () => firebaseRef.off('value', listener)
 	}, [sessionId])
 
 	useEffect(() => {
-		if (activityVal) {
-			setIsLoading(true)
-			myFirebase
-				.database()
-				.ref(`activities/${activityVal}`)
-				.once('value')
-				.then(snapshot => {
-					setActivityName(snapshot.val().name)
-					setIsLoading(false)
-				})
+		if (
+			gameName &&
+			activityName &&
+			activityEncounters &&
+			encounters &&
+			encounterTemplates &&
+			layoutVal &&
+			ownerIdVal &&
+			readyCheckVal
+		) {
+			setIsLoading(false)
 		}
-	}, [activityVal])
+	}, [gameName, activityName, activityEncounters, encounters, encounterTemplates, layoutVal, ownerIdVal, readyCheckVal])
 
-	useEffect(() => {
-		if (encounterVal) {
-			setIsLoading(true)
-			myFirebase
-				.database()
-				.ref(`encounters/${encounterVal}`)
-				.once('value')
-				.then(snapshot => {
-					setEncounterName(snapshot.val().name)
-					setIsLoading(false)
-				})
-		}
-	}, [encounterVal])
-
+	// Get game name
 	useEffect(() => {
 		if (gameVal) {
-			setIsLoading(true)
-			myFirebase
-				.database()
-				.ref(`games/${gameVal}`)
-				.once('value')
-				.then(snapshot => {
-					setGameName(snapshot.val().name)
-					setIsLoading(false)
+			const game = getCacheItem(`cache-${gameVal}-name`)
+
+			if (!game) {
+				Fetch(`games/${gameVal}`).then(result => {
+					setCacheItem(`cache-${gameVal}-name`, { lastUpdated: LAST_UPDATED, data: result.name })
+					setGameName(result.name)
 				})
+			} else {
+				setGameName(game.data)
+			}
 		}
 	}, [gameVal])
 
-	const handleChangeEncounter = encounterId => {
-		clearInterval(messageTimer.current)
+	// Get activity name
+	useEffect(() => {
+		if (activityVal) {
+			const activity = getCacheItem(`cache-${activityVal}-name`)
 
-		myFirebase
-			.database()
-			.ref(`sessions/${sessionId}`)
-			.update({ message: '', encounter: encounterId })
-	}
-
-	const handleReadyCheck = checkActive => {
-		clearInterval(messageTimer.current)
-
-		myFirebase
-			.database()
-			.ref(`sessions/${sessionId}`)
-			.update({ message: '', readyCheck: { active: checkActive } })
-	}
-
-	const submitReadyCheck = (playerId, status) => {
-		myFirebase
-			.database()
-			.ref(`sessions/${sessionId}`)
-			.update({ readyCheck: { ...readyCheckVal, players: { ...readyCheckVal.players, [playerId]: status } } })
-	}
-
-	const handleReset = () => {
-		clearInterval(messageTimer.current)
-
-		myFirebase
-			.database()
-			.ref(`sessions/${sessionId}`)
-			.update({
-				message: '',
-			})
-		// TODO: Reset button states?
-	}
-
-	const handleToggle = buttonId => {
-		myFirebase
-			.database()
-			.ref(`sessions/${sessionId}`)
-			.update({ layout: { ...layoutVal, [buttonId]: !layoutVal[buttonId] } })
-	}
-
-	const handleMessage = message => {
-		clearInterval(messageTimer.current)
-
-		// TODO: Disable buttons on wipe?
-		myFirebase
-			.database()
-			.ref(`sessions/${sessionId}`)
-			.update({ message: [{ text: message, time: 0 }] })
-	}
-
-	const handleTimer = messages => {
-		clearInterval(messageTimer.current)
-
-		let timestamp = Math.floor(Date.now() / 1000)
-
-		let messageArray = []
-		for (let element of messages) {
-			timestamp = timestamp + element.time
-			messageArray.push({ text: element.message, time: timestamp, showTime: element.showTime })
-		}
-
-		myFirebase
-			.database()
-			.ref(`sessions/${sessionId}`)
-			.update({
-				message: messageArray,
-			})
-	}
-
-	const handleGroup = itemId => {
-		return buttonId => {
-			myFirebase
-				.database()
-				.ref(`sessions/${sessionId}`)
-				.update({
-					layout: { ...layoutVal, [itemId]: buttonId === 'reset' ? false : buttonId },
+			if (!activity) {
+				Fetch(`activities/${activityVal}`).then(result => {
+					setCacheItem(`cache-${activityVal}-name`, { lastUpdated: LAST_UPDATED, data: result.name })
+					setActivityName(result.name)
 				})
+			} else {
+				setActivityName(activity.data)
+			}
 		}
+	}, [activityVal])
+
+	// Get activity encounters
+	useEffect(() => {
+		if (activityVal) {
+			const activityE = getCacheItem(`cache-${activityVal}-encounters`)
+
+			if (!activityE) {
+				Fetch(`activityEncounters/${activityVal}`).then(result => {
+					setCacheItem(`cache-${activityVal}-encounters`, { lastUpdated: LAST_UPDATED, data: result })
+					setActivityEncounters(result)
+				})
+			} else {
+				setActivityEncounters(activityE.data)
+			}
+		}
+	}, [activityVal])
+
+	const fetchEncounterTemplates = async () => {
+		setLoadingMessage('Loading templates')
+
+		let templateObject
+		let encounterObject
+		for (let encounter of activityEncounters) {
+			let encounterObj = getCacheItem(`cache-${encounter}`)
+
+			if (!encounterObj) {
+				encounterObj = await Fetch(`encounters/${encounter}`).then(result => {
+					setCacheItem(`cache-${encounter}`, { lastUpdated: LAST_UPDATED, data: result })
+					return { data: result }
+				})
+			}
+
+			if (encounterObj?.data) {
+				encounterObject = { ...encounterObject, [encounter]: { name: encounterObj.data.name } }
+
+				let template = getCacheItem(`template-${encounter}`)
+
+				if (!template) {
+					template = await Fetch(`encounterTemplates/${encounter}`).then(result => {
+						setCacheItem(`template-${encounter}`, { lastUpdated: LAST_UPDATED, data: result })
+						return { data: result }
+					})
+				}
+
+				if (template) {
+					templateObject = { ...templateObject, [encounter]: template.data }
+				}
+			}
+		}
+
+		setEncounters(encounterObject)
+		setEncounterTemplates(templateObject)
 	}
 
+	// Fetch encounter templates
+	useEffect(() => {
+		if (activityEncounters) {
+			fetchEncounterTemplates()
+		}
+	}, [activityEncounters])
+
+	// Update display message using timer
 	useEffect(() => {
 		if (messageVal || messageVal === '') {
 			if (messageVal === '') {
@@ -308,12 +252,101 @@ const Session = () => {
 		}
 	}, [messageVal])
 
+	const handleChangeEncounter = encounterId => {
+		clearInterval(messageTimer.current)
+
+		const ref = `sessions/${sessionId}`
+		const data = { message: '', encounter: encounterId }
+
+		Update(ref, data)
+	}
+
+	const handleReadyCheck = checkActive => {
+		clearInterval(messageTimer.current)
+
+		const ref = `sessions/${sessionId}`
+		const data = { message: '', readyCheck: { active: checkActive } }
+
+		Update(ref, data)
+	}
+
+	const submitReadyCheck = (playerId, status) => {
+		clearInterval(messageTimer.current)
+
+		const ref = `sessions/${sessionId}`
+		const data = {
+			readyCheck: {
+				...readyCheckVal,
+				players: { ...readyCheckVal.players, [playerId]: status },
+			},
+		}
+
+		Update(ref, data)
+	}
+
+	const handleReset = () => {
+		clearInterval(messageTimer.current)
+
+		const ref = `sessions/${sessionId}`
+		const data = {
+			message: '',
+		}
+
+		// TODO: Reset button states
+		Update(ref, data)
+	}
+
+	const handleToggle = buttonId => {
+		const ref = `sessions/${sessionId}`
+		const data = { layout: { ...layoutVal, [buttonId]: !layoutVal[buttonId] } }
+
+		Update(ref, data)
+	}
+
+	const handleMessage = message => {
+		clearInterval(messageTimer.current)
+
+		const ref = `sessions/${sessionId}`
+		const data = { message: [{ text: message, time: 0 }] }
+
+		// TODO: Disable buttons on wipe?
+		Update(ref, data)
+	}
+
+	const handleTimer = messages => {
+		clearInterval(messageTimer.current)
+
+		let timestamp = Math.floor(Date.now() / 1000)
+
+		let messageArray = []
+		for (let element of messages) {
+			timestamp = timestamp + element.time
+			messageArray.push({ text: element.message, time: timestamp, showTime: element.showTime })
+		}
+
+		const ref = `sessions/${sessionId}`
+		const data = {
+			message: messageArray,
+		}
+
+		Update(ref, data)
+	}
+
+	const handleGroup = itemId => {
+		return buttonId => {
+			const ref = `sessions/${sessionId}`
+			const data = {
+				layout: { ...layoutVal, [itemId]: buttonId === 'reset' ? false : buttonId },
+			}
+
+			Update(ref, data)
+		}
+	}
+
 	if (isLoading) {
 		return (
 			<React.Fragment>
-				<LoadingContainer>
-					<LoadingIcon />
-				</LoadingContainer>
+				<Loading loadingMessage={loadingMessage} />
 			</React.Fragment>
 		)
 	}
@@ -326,362 +359,99 @@ const Session = () => {
 		)
 	}
 
-	if (!sessionId) {
-		return (
-			<React.Fragment>
-				<h1>Session ID is required</h1>
-				<p>
-					<Link to="/join">Join an existing session</Link>
-				</p>
-				<p>or</p>
-				{isAuthenticated && (
-					<React.Fragment>
-						<p>
-							<Link to="/create">Create a new session</Link>
-						</p>
-					</React.Fragment>
-				)}
-				{!isAuthenticated && (
-					<React.Fragment>
-						<p>
-							<Link to="/login">login</Link> to create a new session
-						</p>
-						<p>
-							No account? <Link to="/register">Register now to create sessions</Link>
-						</p>
-					</React.Fragment>
-				)}
-			</React.Fragment>
-		)
-	}
-
 	return (
 		<React.Fragment>
 			{readyCheckVal && readyCheckVal.active && (
-				<ModalContainer>
-					<ModalContents>
-						<h3>Readycheck modal</h3>
-						{readyCheckVal.players && (
-							<div>
-								{Object.keys(readyCheckVal.players).map(player => (
-									<div key={player}>
-										<p style={{ color: readyCheckVal.players[player] ? 'green' : 'red' }}>{player}</p>
-									</div>
-								))}
-							</div>
-						)}
-						<div>
-							<button
-								type="button"
-								onClick={() => {
-									submitReadyCheck(username ? username : localUsername, true)
-								}}
-							>
-								Ready
-							</button>
-							<button
-								type="button"
-								onClick={() => {
-									submitReadyCheck(username ? username : localUsername, false)
-								}}
-							>
-								Not ready
-							</button>
-						</div>
-						{uid === ownerIdVal && (
-							<div>
-								<button
-									type="button"
-									onClick={() => {
-										handleReadyCheck(false)
-									}}
-								>
-									Close readycheck
-								</button>
-							</div>
-						)}
-					</ModalContents>
-				</ModalContainer>
+				<ReadyCheck
+					uid={uid}
+					ownerIdVal={ownerIdVal}
+					handleReadyCheck={handleReadyCheck}
+					readyCheckVal={readyCheckVal}
+					submitReadyCheck={submitReadyCheck}
+					username={username}
+					localUsername={localUsername}
+					colorMode={colorMode}
+				/>
 			)}
+
 			{changeEncounter && (
-				<ModalContainer>
-					<ModalContents>
-						<h3 style={{ textAlign: 'center' }}>Change encounter</h3>
-						<div>
-							{activityEncounters.map(encounter => (
-								<button
-									key={encounter}
-									type="button"
-									style={{ border: '1px solid white', borderRadius: '10px', padding: '7px 15px', margin: '10px' }}
-									onClick={() => {
-										setChangeEncounter(false)
-										handleChangeEncounter(encounter)
+				<ChangeEncounter
+					activityEncounters={activityEncounters}
+					setChangeEncounter={setChangeEncounter}
+					handleChangeEncounter={handleChangeEncounter}
+					encounters={encounters}
+				/>
+			)}
+
+			<SessionDetails gameName={gameName} activityName={activityName} sessionId={sessionId} />
+
+			{uid === ownerIdVal && (
+				<AdminControls
+					setChangeEncounter={setChangeEncounter}
+					handleTimer={handleTimer}
+					handleReset={handleReset}
+					handleMessage={handleMessage}
+					handleReadyCheck={handleReadyCheck}
+				/>
+			)}
+
+			<MessageDisplay displayMessage={displayMessage} encounterName={encounters?.[encounterVal]?.name} />
+
+			<div>
+				{encounters && encounterVal && encounterTemplates && !encounterTemplates?.[encounterVal] && (
+					<React.Fragment>
+						<h3>No template found for {encounters?.[encounterVal]?.name}</h3>
+					</React.Fragment>
+				)}
+
+				{encounterVal && encounterTemplates?.[encounterVal] && (
+					<div
+						style={{
+							width: '100%',
+						}}
+					>
+						{encounterTemplates[encounterVal].map((row, rowIndex) => {
+							return (
+								<div
+									key={rowIndex}
+									style={{
+										display: 'flex',
+										flexFlow: 'row nowrap',
+										justifyContent: 'space-between',
 									}}
 								>
-									{encounters[encounter].name}
-								</button>
-							))}
-						</div>
-						<button
-							type="button"
-							style={{
-								border: '1px solid white',
-								borderRadius: '10px',
-								padding: '7px 15px',
-								margin: '10px',
-								backgroundColor: colors.red,
-							}}
-							onClick={() => {
-								setChangeEncounter(false)
-							}}
-						>
-							Cancel
-						</button>
-					</ModalContents>
-				</ModalContainer>
-			)}
-			<div style={{ display: 'flex', flexFlow: 'row nowrap', justifyContent: 'space-between' }}>
-				<div style={{ flexBasis: '40%' }}>
-					<p>{gameName}</p>
-					<p>{activityName}</p>
-				</div>
-				<div style={{ flexBasis: '40%' }}>
-					<p>Session ID:</p>
-					<p>{sessionId}</p>
-				</div>
-			</div>
-			{uid === ownerIdVal && (
-				<div style={{ width: '100%' }}>
-					<div style={{ display: 'flex', flexFlow: 'row nowrap', marginBottom: '10px' }}>
-						<div style={{ flexBasis: '50%' }}>
-							<button
-								type="button"
-								style={{
-									border: '1px solid white',
-									borderRadius: '10px',
-									padding: '7px 15px',
-									width: '100%',
-									backgroundColor: colors.green,
-								}}
-								onClick={() => {
-									handleTimer([
-										{ message: 'Start in', time: 5, showTime: true },
-										{ message: 'GO!', time: 5, showTime: false },
-									])
-								}}
-							>
-								Start
-							</button>
-						</div>
-						<div style={{ flexBasis: '50%' }}>
-							<button
-								type="button"
-								style={{
-									border: '1px solid white',
-									borderRadius: '10px',
-									padding: '7px 15px',
-									width: '100%',
-									backgroundColor: colors.yellow,
-								}}
-								onClick={() => {
-									handleReset()
-								}}
-							>
-								Reset
-							</button>
-						</div>
+									{row.map((col, colIndex) => {
+										return (
+											<div
+												key={colIndex}
+												style={{
+													display: 'flex',
+													flexFlow: 'column nowrap',
+													width: '100%',
+													minHeight: colHeight,
+												}}
+											>
+												{col.map(item => (
+													<Item
+														key={item.id}
+														item={item}
+														colorMode={colorMode}
+														layoutVal={layoutVal}
+														handleGroup={handleGroup}
+														handleMessage={handleMessage}
+														handleTimer={handleTimer}
+														handleToggle={handleToggle}
+													/>
+												))}
+											</div>
+										)
+									})}
+								</div>
+							)
+						})}
 					</div>
-					<div style={{ display: 'flex', flexFlow: 'row nowrap', marginTop: '10px' }}>
-						<div style={{ flexBasis: '50%' }}>
-							<button
-								type="button"
-								style={{
-									border: '1px solid white',
-									borderRadius: '10px',
-									padding: '7px 15px',
-									width: '100%',
-									color: colors.primaryText,
-									backgroundColor: colors.red,
-								}}
-								onClick={() => {
-									handleMessage('WIPE!')
-								}}
-							>
-								Wipe
-							</button>
-						</div>
-						<div style={{ flexBasis: '50%' }}>
-							<button
-								type="button"
-								style={{
-									border: '1px solid white',
-									borderRadius: '10px',
-									padding: '7px 15px',
-									width: '100%',
-									color: colors.primaryText,
-									backgroundColor: colors.blue,
-								}}
-								onClick={() => {
-									handleReadyCheck(true)
-								}}
-							>
-								Ready check
-							</button>
-						</div>
-					</div>
-					{uid === ownerIdVal && (
-						<div style={{ marginTop: '10px' }}>
-							<button
-								type="button"
-								style={{
-									border: '1px solid white',
-									borderRadius: '10px',
-									padding: '7px 15px',
-									width: '100%',
-									color: colors.primaryText,
-									backgroundColor: colors.background,
-								}}
-								onClick={() => {
-									setChangeEncounter(true)
-								}}
-							>
-								Change encounter
-							</button>
-						</div>
-					)}
-				</div>
-			)}
-			<div
-				style={{
-					width: '100%',
-					border: '1px solid white',
-					borderRadius: '5px',
-					textAlign: 'center',
-					margin: '10px 0',
-				}}
-			>
-				{displayMessage && <h3 style={{ margin: '0.75em' }}>{displayMessage}</h3>}
-				{!displayMessage && <h3 style={{ margin: '0.75em' }}>{encounterName}</h3>}
-			</div>
-			<div>
-				{encounterVal && !encounterTemplates && (
-					<React.Fragment>
-						<h3>Loading templates</h3>
-					</React.Fragment>
-				)}
-				{encounterVal && encounterTemplates && !encounterTemplates[encounterVal] && (
-					<React.Fragment>
-						<h3>No template found for {encounterName}</h3>
-					</React.Fragment>
-				)}
-				{encounterVal && encounterTemplates?.[encounterVal] && (
-					<React.Fragment>
-						<div
-							style={{
-								width: '100%',
-							}}
-						>
-							{encounterTemplates[encounterVal].map((row, rowIndex) => {
-								return (
-									<div
-										key={rowIndex}
-										style={{
-											display: 'flex',
-											flexFlow: 'row nowrap',
-											justifyContent: 'space-between',
-										}}
-									>
-										{row.map((col, colIndex) => {
-											return (
-												<div
-													key={colIndex}
-													style={{
-														display: 'flex',
-														flexFlow: 'column nowrap',
-														flexGrow: '1',
-													}}
-												>
-													{col.map(item => {
-														if (item.type === 'group') {
-															return (
-																<React.Fragment key={item.id}>
-																	<ButtonGroup
-																		size={breakpoint}
-																		orientation={item.direction}
-																		colorMode={colorMode}
-																		alignment={item.alignment}
-																		buttons={item.buttons}
-																		active={layoutVal[item.id] || ''}
-																		click={handleGroup(item.id)}
-																	/>
-																</React.Fragment>
-															)
-														}
-
-														if (item.type === 'message') {
-															return (
-																<React.Fragment key={item.id}>
-																	<MessageButton
-																		size={breakpoint}
-																		colorMode={colorMode}
-																		alignment={item.alignment}
-																		onClick={() => {
-																			handleMessage(item.message)
-																		}}
-																	>
-																		{item.text}
-																	</MessageButton>
-																</React.Fragment>
-															)
-														}
-
-														if (item.type === 'timer') {
-															return (
-																<React.Fragment key={item.id}>
-																	<TimerButton
-																		size={breakpoint}
-																		colorMode={colorMode}
-																		alignment={item.alignment}
-																		onClick={() => {
-																			handleTimer([
-																				{ message: item.message, time: item.time, showTime: item.showTime ?? false },
-																			])
-																		}}
-																	>
-																		{item.text}
-																	</TimerButton>
-																</React.Fragment>
-															)
-														}
-
-														return (
-															<React.Fragment key={item.id}>
-																<ToggleButton
-																	id={item.id}
-																	size={breakpoint}
-																	active={layoutVal[item.id]}
-																	colorMode={colorMode}
-																	alignment={item.alignment}
-																	onClick={() => {
-																		handleToggle(item.id)
-																	}}
-																>
-																	{item.text}
-																</ToggleButton>
-															</React.Fragment>
-														)
-													})}
-												</div>
-											)
-										})}
-									</div>
-								)
-							})}
-						</div>
-					</React.Fragment>
 				)}
 			</div>
-			{sessionError && <div>{sessionError}</div>}
 		</React.Fragment>
 	)
 }

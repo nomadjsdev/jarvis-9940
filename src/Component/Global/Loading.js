@@ -1,3 +1,4 @@
+import React from 'react'
 import styled, { keyframes } from 'styled-components'
 
 import colors from 'Styles/colors'
@@ -11,15 +12,16 @@ const rotate360 = keyframes`
   }
 `
 
-export const LoadingContainer = styled.div`
+const LoadingContainer = styled.div`
 	background: ${colors.background};
 	min-height: 100vh;
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 `
 
-export const LoadingIcon = styled.div`
+const LoadingIcon = styled.div`
 	animation: ${rotate360} 1s linear infinite;
 	transform: translateZ(0);
 
@@ -32,3 +34,10 @@ export const LoadingIcon = styled.div`
 	height: 24px;
 	border-radius: 50%;
 `
+
+export default ({ loadingMessage = 'Loading' }) => (
+	<LoadingContainer>
+		<LoadingIcon />
+		<p>{loadingMessage}</p>
+	</LoadingContainer>
+)

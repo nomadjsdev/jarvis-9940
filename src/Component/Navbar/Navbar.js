@@ -7,12 +7,92 @@ import { SubmitButton } from 'Component/Global/Form'
 import LocalUsernameForm from 'Component/LocalUsernameForm'
 import ChangeColorSettings from 'Component/ChangeColorSettings'
 
-import { Container, Menu, StyledNavLink, MenuButton } from './Navbar.styles'
+import { StyledNavLink, ButtonForMenu, MenuContainer } from './Navbar.styles'
 
-const Navbar = () => {
-	const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
+const Logo = () => (
+	<Link to="/">
+		<h2 style={{ marginLeft: '20px' }}>Jarvis 99-40</h2>
+	</Link>
+)
+
+const Burgermenu = ({ menuIsOpen, handleClick }) => (
+	<ButtonForMenu onClick={handleClick}>
+		<div className={menuIsOpen ? 'open' : ''}>
+			<span>&nbsp;</span>
+			<span>&nbsp;</span>
+			<span>&nbsp;</span>
+		</div>
+	</ButtonForMenu>
+)
+
+const LocalUsername = ({ setChangeUsername }) => {
 	const localUsername = useSelector(state => state.user.localUsername)
+
+	return (
+		<div style={{ display: 'flex', flexFlow: 'row nowrap' }}>
+			{localUsername && <p style={{ padding: '0 20px' }}>{localUsername}</p>}
+			<SubmitButton
+				type="button"
+				style={{ flexGrow: 1 }}
+				onClick={() => {
+					setChangeUsername(true)
+				}}
+			>
+				{localUsername ? 'Change username' : 'Set username'}
+			</SubmitButton>
+		</div>
+	)
+}
+
+const ColorblindMode = ({ setChangeColorSettings }) => (
+	<SubmitButton
+		type="button"
+		style={{ marginBottom: '10px' }}
+		onClick={() => {
+			setChangeColorSettings(true)
+		}}
+	>
+		Colorblind mode
+	</SubmitButton>
+)
+
+const NavbarDefault = ({ setMenuIsOpen, setChangeUsername }) => (
+	<React.Fragment>
+		<StyledNavLink to="/register">Register</StyledNavLink>
+		<StyledNavLink to="/login">Login</StyledNavLink>
+		<LocalUsername setMenuIsOpen={setMenuIsOpen} setChangeUsername={setChangeUsername} />
+	</React.Fragment>
+)
+
+const NavbarAuth = () => {
+	const dispatch = useDispatch()
+	const username = useSelector(state => state.user?.details?.username)
+
+	return (
+		<React.Fragment>
+			<StyledNavLink to="/create">Create new session</StyledNavLink>
+			<p style={{ padding: '0 20px' }}>{username}</p>
+			<SubmitButton
+				type="button"
+				onClick={() => {
+					dispatch(logoutUser())
+				}}
+			>
+				Logout
+			</SubmitButton>
+			{/* <StyledNavLink to="/profile">Profile</StyledNavLink> */}
+		</React.Fragment>
+	)
+}
+
+export default () => {
+	const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
+
 	const [menuIsOpen, setMenuIsOpen] = useState(false)
+	const handleClick = () => {
+		setMenuIsOpen(!menuIsOpen)
+	}
+
 	let location = useLocation()
 	useEffect(() => {
 		setMenuIsOpen(false)
@@ -24,86 +104,24 @@ const Navbar = () => {
 	return (
 		<React.Fragment>
 			{changeUsername && <LocalUsernameForm modalIsOpen={setChangeUsername} />}
+
 			{changeColorSettings && <ChangeColorSettings modalIsOpen={setChangeColorSettings} />}
-			<Container menuIsOpen={menuIsOpen}>
-				<div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap' }}>
-					<Link to="/">
-						<h2 style={{ marginLeft: '20px' }}>Jarvis 99-40</h2>
-					</Link>
-					<MenuButton
-						onClick={() => {
-							setMenuIsOpen(!menuIsOpen)
-						}}
-					>
-						{menuIsOpen ? 'Close' : 'Menu'}
-					</MenuButton>
+
+			<div style={{ display: 'flex', flexFlow: 'row wrap', justifyContent: 'space-between', border: '1px solid' }}>
+				<div style={{}}>
+					<Logo />
 				</div>
-				<Menu menuIsOpen={menuIsOpen}>
+				<div style={{}}>
+					<Burgermenu menuIsOpen={menuIsOpen} handleClick={handleClick} />
+				</div>
+				<MenuContainer menuIsOpen={menuIsOpen}>
 					<StyledNavLink to="/join">Join session</StyledNavLink>
-					{isAuthenticated ? (
-						<NavbarAuth />
-					) : (
-						<React.Fragment>
-							<NavbarDefault />
-							{localUsername && (
-								<React.Fragment>
-									<span>{localUsername}</span>{' '}
-									<SubmitButton
-										type="button"
-										onClick={() => {
-											setMenuIsOpen(false)
-											setChangeUsername(true)
-										}}
-									>
-										Change username
-									</SubmitButton>
-								</React.Fragment>
-							)}
-						</React.Fragment>
-					)}
-					<SubmitButton
-						type="button"
-						onClick={() => {
-							setMenuIsOpen(false)
-							setChangeColorSettings(true)
-						}}
-					>
-						Colorblind mode
-					</SubmitButton>
-				</Menu>
-			</Container>
+
+					{isAuthenticated ? <NavbarAuth /> : <NavbarDefault setChangeUsername={setChangeUsername} />}
+
+					<ColorblindMode setChangeColorSettings={setChangeColorSettings} />
+				</MenuContainer>
+			</div>
 		</React.Fragment>
 	)
 }
-
-const NavbarDefault = () => {
-	return (
-		<React.Fragment>
-			<StyledNavLink to="/register">Register</StyledNavLink>
-			<StyledNavLink to="/login">Login</StyledNavLink>
-		</React.Fragment>
-	)
-}
-
-const NavbarAuth = () => {
-	const dispatch = useDispatch()
-	const username = useSelector(state => state.user?.details?.username)
-
-	return (
-		<React.Fragment>
-			<StyledNavLink to="/create">Create new session</StyledNavLink>
-			<button
-				type="button"
-				onClick={() => {
-					dispatch(logoutUser())
-				}}
-			>
-				Logout
-			</button>
-			<span>{username}</span>
-			<StyledNavLink to="/profile">Profile</StyledNavLink>
-		</React.Fragment>
-	)
-}
-
-export default Navbar
