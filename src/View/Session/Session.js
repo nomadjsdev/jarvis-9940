@@ -422,28 +422,34 @@ const Session = () => {
 								>
 									{row.map((col, colIndex) => {
 										return (
-											<div
-												key={colIndex}
-												style={{
-													display: 'flex',
-													flexFlow: 'column nowrap',
-													width: '100%',
-													minHeight: colHeight,
-												}}
-											>
+											<React.Fragment key={colIndex}>
 												{col.map(item => (
-													<Item
+													<div
 														key={item.id}
-														item={item}
-														colorMode={colorMode}
-														layoutVal={layoutVal}
-														handleGroup={handleGroup}
-														handleMessage={handleMessage}
-														handleTimer={handleTimer}
-														handleToggle={handleToggle}
-													/>
+														style={{
+															display: 'flex',
+															justifyContent:
+																item.alignment === 'right'
+																	? 'flex-end'
+																	: item.alignment === 'center'
+																	? 'center'
+																	: 'flex-start',
+															width: '100%',
+															minHeight: colHeight,
+														}}
+													>
+														<Item
+															item={item}
+															colorMode={colorMode}
+															layoutVal={layoutVal}
+															handleGroup={handleGroup}
+															handleMessage={handleMessage}
+															handleTimer={handleTimer}
+															handleToggle={handleToggle}
+														/>
+													</div>
 												))}
-											</div>
+											</React.Fragment>
 										)
 									})}
 								</div>

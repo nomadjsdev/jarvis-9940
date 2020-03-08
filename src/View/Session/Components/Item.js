@@ -6,65 +6,57 @@ const Item = props => {
 
 	if (item.type === 'group') {
 		return (
-			<React.Fragment>
-				<ButtonGroup
-					orientation={item.direction}
-					colorMode={colorMode}
-					alignment={item.alignment}
-					buttons={item.buttons}
-					active={layoutVal[item.id] || ''}
-					click={handleGroup(item.id)}
-				/>
-			</React.Fragment>
+			<ButtonGroup
+				orientation={item.direction}
+				colorMode={colorMode}
+				alignment={item.alignment}
+				buttons={item.buttons}
+				active={layoutVal[item.id] || ''}
+				click={handleGroup(item.id)}
+			/>
 		)
 	}
 
 	if (item.type === 'message') {
 		return (
-			<React.Fragment>
-				<MessageButton
-					colorMode={colorMode}
-					alignment={item.alignment}
-					onClick={() => {
-						handleMessage(item.message)
-					}}
-				>
-					{item.text}
-				</MessageButton>
-			</React.Fragment>
+			<MessageButton
+				colorMode={colorMode}
+				alignment={item.alignment}
+				onClick={() => {
+					handleMessage(item.message)
+				}}
+			>
+				{item.text}
+			</MessageButton>
 		)
 	}
 
 	if (item.type === 'timer') {
 		return (
-			<React.Fragment>
-				<TimerButton
-					colorMode={colorMode}
-					alignment={item.alignment}
-					onClick={() => {
-						handleTimer([{ message: item.message, time: item.time, showTime: item.showTime ?? false }])
-					}}
-				>
-					{item.text}
-				</TimerButton>
-			</React.Fragment>
+			<TimerButton
+				colorMode={colorMode}
+				alignment={item.alignment}
+				onClick={() => {
+					handleTimer(item.messages)
+				}}
+			>
+				{item.text}
+			</TimerButton>
 		)
 	}
 
 	return (
-		<React.Fragment>
-			<ToggleButton
-				id={item.id}
-				active={layoutVal[item.id]}
-				colorMode={colorMode}
-				alignment={item.alignment}
-				onClick={() => {
-					handleToggle(item.id)
-				}}
-			>
-				{item.text}
-			</ToggleButton>
-		</React.Fragment>
+		<ToggleButton
+			id={item.id}
+			active={layoutVal[item.id]}
+			colorMode={colorMode}
+			alignment={item.alignment}
+			onClick={() => {
+				handleToggle(item.id)
+			}}
+		>
+			{item.text}
+		</ToggleButton>
 	)
 }
 
