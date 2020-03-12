@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useHistory, Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
 
@@ -9,6 +9,7 @@ import Modal from 'Component/Global/Modal'
 import { SubmitButton, FieldContainer, FieldWarning } from 'Component/Global/Form'
 
 const LocalUsername = ({ modalIsOpen }) => {
+	const history = useHistory()
 	const dispatch = useDispatch()
 	const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
 	const [isSubmitting, setIsSubmitting] = useState(false)
@@ -18,6 +19,14 @@ const LocalUsername = ({ modalIsOpen }) => {
 		setIsSubmitting(true)
 		const { usernameField } = data
 		dispatch(setLocalUsername(usernameField))
+	}
+
+	const handleCancel = () => {
+		if (modalIsOpen) {
+			modalIsOpen(false)
+		} else {
+			history.push('/')
+		}
 	}
 
 	return (
@@ -45,7 +54,7 @@ const LocalUsername = ({ modalIsOpen }) => {
 					<SubmitButton
 						type="button"
 						onClick={() => {
-							modalIsOpen(false)
+							handleCancel()
 						}}
 					>
 						Cancel

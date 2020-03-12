@@ -24,4 +24,5 @@ export const DropdownContainer = styled.div`
 	background-color: ${colors.background};
 	min-width: 180px;
 	min-height: 120px;
+	z-index: 5;
 `

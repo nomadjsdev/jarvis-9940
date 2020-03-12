@@ -15,16 +15,17 @@ const Create = () => {
 
 	const [games, setGames] = useState(null)
 	useEffect(() => {
+		const ref = myFirebase.database().ref(`games`)
 		if (!games) {
-			myFirebase
-				.database()
-				.ref(`games`)
-				.once('value')
-				.then(snapshot => {
-					setGames(snapshot.val())
-				})
+			ref.once('value').then(snapshot => {
+				setGames(snapshot.val())
+			})
 		}
-	}, [games])
+
+		return () => {
+			ref.off()
+		}
+	}, [])
 
 	// TODO: Fetch activities based on selected game
 	// Upside: less data fetching
@@ -32,53 +33,57 @@ const Create = () => {
 
 	const [gamePveActivities, setGamePveActivities] = useState(null)
 	useEffect(() => {
+		const ref = myFirebase.database().ref(`gamePveActivities`)
 		if (!gamePveActivities) {
-			myFirebase
-				.database()
-				.ref(`gamePveActivities`)
-				.once('value')
-				.then(snapshot => {
-					setGamePveActivities(snapshot.val())
-				})
+			ref.once('value').then(snapshot => {
+				setGamePveActivities(snapshot.val())
+			})
+		}
+
+		return () => {
+			ref.off()
 		}
 	}, [gamePveActivities])
 
 	const [gamePvpActivities, setGamePvpActivities] = useState(null)
 	useEffect(() => {
+		const ref = myFirebase.database().ref(`gamePvpActivities`)
 		if (!gamePvpActivities) {
-			myFirebase
-				.database()
-				.ref(`gamePvpActivities`)
-				.once('value')
-				.then(snapshot => {
-					setGamePvpActivities(snapshot.val())
-				})
+			ref.once('value').then(snapshot => {
+				setGamePvpActivities(snapshot.val())
+			})
+		}
+
+		return () => {
+			ref.off()
 		}
 	}, [gamePvpActivities])
 
 	const [activities, setActivities] = useState(null)
 	useEffect(() => {
+		const ref = myFirebase.database().ref(`activities`)
 		if (!activities) {
-			myFirebase
-				.database()
-				.ref(`activities`)
-				.once('value')
-				.then(snapshot => {
-					setActivities(snapshot.val())
-				})
+			ref.once('value').then(snapshot => {
+				setActivities(snapshot.val())
+			})
+		}
+
+		return () => {
+			ref.off()
 		}
 	}, [activities])
 
 	const [encounters, setEncounters] = useState(null)
 	useEffect(() => {
+		const ref = myFirebase.database().ref(`encounters`)
 		if (!encounters) {
-			myFirebase
-				.database()
-				.ref(`encounters`)
-				.once('value')
-				.then(snapshot => {
-					setEncounters(snapshot.val())
-				})
+			ref.once('value').then(snapshot => {
+				setEncounters(snapshot.val())
+			})
+		}
+
+		return () => {
+			ref.off()
 		}
 	}, [encounters])
 
@@ -195,6 +200,7 @@ const Create = () => {
 	return (
 		<React.Fragment>
 			{isCreating && <Loading loadingMessage="Creating new session" />}
+
 			{!isCreating && (
 				<React.Fragment>
 					<h1>Create a new session</h1>

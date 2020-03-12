@@ -46,6 +46,7 @@ const Join = () => {
 			<div style={{ display: 'flex', flexDirection: 'column', minHeight: '70vh' }}>
 				<div style={{ flex: '0 0 30%' }}>
 					{!isAuthenticated && !localUsername && <LocalUsernameForm />}
+
 					{(isAuthenticated || localUsername) && (
 						<React.Fragment>
 							<h1>Join a session</h1>
