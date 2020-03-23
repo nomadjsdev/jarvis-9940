@@ -1,18 +1,31 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
 
 import { loginUser } from 'Store/Feature/auth'
 
-import { SubmitButton, FieldContainer, FieldWarning } from 'Component/Global/Form'
+import { Page, PrimarySection, SecondarySection } from 'Component/Global/Layout'
+import {
+	SubmitContainer,
+	SubmitButton,
+	FieldContainer,
+	FieldWarning,
+	InputField,
+	ErrorText,
+} from 'Component/Global/Form'
 
 const Login = () => {
 	const dispatch = useDispatch()
 	const loginError = useSelector(state => state.auth.loginError)
 	const { register, handleSubmit, errors } = useForm({ mode: 'onChange' })
-	const [isSubmitting, setIsSubmitting] = useState(false)
-	const [viewPassword, setViewPassword] = useState(false)
+
+	const [isSubmitting, setIsSubmitting] = React.useState(false)
+	const [viewPassword, setViewPassword] = React.useState(false)
+
+	React.useEffect(() => {
+		setIsSubmitting(false)
+	}, [loginError])
 
 	const onSubmit = data => {
 		const { emailField, passwordField } = data
@@ -23,18 +36,17 @@ const Login = () => {
 	return (
 		<React.Fragment>
 			<h1>Login</h1>
-			<div style={{ display: 'flex', flexDirection: 'column', minHeight: '70vh' }}>
-				<div style={{ flex: '0 0 30%' }}>
+			<Page>
+				<PrimarySection>
 					<form onSubmit={handleSubmit(onSubmit)}>
 						<p>
 							<label htmlFor="emailField">Email address</label>
 						</p>
 						<FieldContainer>
-							<input
+							<InputField
 								type="email"
 								id="emailField"
 								name="emailField"
-								style={{ width: '100%', height: '30px' }}
 								ref={register({
 									required: { value: true, message: 'Email is required' },
 								})}
@@ -53,41 +65,41 @@ const Login = () => {
 							</span>
 						</p>
 						<FieldContainer>
-							<input
+							<InputField
 								type={viewPassword ? 'text' : 'password'}
 								id="passwordField"
 								name="passwordField"
-								style={{ width: '100%', height: '30px' }}
 								ref={register({
 									required: { value: true, message: 'Password is required' },
 								})}
 							/>
 							{errors?.passwordField?.message && <FieldWarning>!!</FieldWarning>}
 						</FieldContainer>
-						<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+						<SubmitContainer>
+							{isSubmitting && <p>Logging in...</p>}
 							<SubmitButton type="submit" disabled={isSubmitting}>
 								Login
 							</SubmitButton>
-						</div>
+						</SubmitContainer>
 					</form>
-				</div>
-				<div style={{ flex: '1 0 30%' }}>
-					<p style={{ color: 'red', fontWeight: 'bold' }}>
+				</PrimarySection>
+				<SecondarySection>
+					<ErrorText>
 						{errors?.emailField?.message && <span>{errors.emailField.message}</span>}
 						{errors?.passwordField?.message && <span>{errors.passwordField.message}</span>}
 						{loginError && <span>{loginError}</span>}
 						{!errors?.emailField?.message && !errors?.passwordField?.message && !loginError && <span>&nbsp;</span>}
-					</p>
-				</div>
-				<div style={{ flex: '1 0 30%' }}>
+					</ErrorText>
+				</SecondarySection>
+				<SecondarySection>
 					<p>
 						Don&apos;t have an account? <Link to="/register">Register here.</Link>
 					</p>
 					<p>
 						Forgot your password? <Link to="/passwordreset">Reset it here.</Link>
 					</p>
-				</div>
-			</div>
+				</SecondarySection>
+			</Page>
 		</React.Fragment>
 	)
 }

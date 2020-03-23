@@ -27,19 +27,31 @@ import { DEFAULT_COLOR_MODE } from 'Utils/Constants'
 export const registerUser = (email, password, username) => dispatch => {
 	dispatch(requestRegister())
 
+	const userLowerCaps = username.toLowerCase()
+
 	myFirebase
-		.auth()
-		.createUserWithEmailAndPassword(email, password)
-		.then(response => {
-			dispatch(receiveRegister())
-			return response
-		})
-		.then(userObj => {
-			dispatch(createUser(userObj.user.uid, userObj.user.email, username))
-		})
-		.catch(error => {
-			console.log(error)
-			dispatch(registerError(error.message))
+		.database()
+		.ref(`userList/${userLowerCaps}`)
+		.once('value')
+		.then(snapshot => {
+			if (snapshot.exists()) {
+				dispatch(registerError('Username already exists'))
+			} else {
+				myFirebase
+					.auth()
+					.createUserWithEmailAndPassword(email, password)
+					.then(response => {
+						dispatch(receiveRegister())
+						return response
+					})
+					.then(userObj => {
+						dispatch(createUser(userObj.user.uid, userObj.user.email, username))
+					})
+					.catch(error => {
+						console.log(error)
+						dispatch(registerError(error.message))
+					})
+			}
 		})
 }
 

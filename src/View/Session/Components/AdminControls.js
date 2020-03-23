@@ -1,6 +1,26 @@
 import React from 'react'
+import styled from 'styled-components'
 
 import { colors } from 'Styles'
+
+const Row = styled.div`
+	display: flex;
+	flex-flow: row nowrap;
+	margin-bottom: 10px;
+`
+
+const Col = styled.div`
+	flex-basis: 50%;
+`
+
+const Button = styled.button`
+	border: 1px solid white;
+	border-radius: 10px;
+	padding: 7px 15px;
+	width: 100%;
+	color: ${props => props.color};
+	background-color: ${props => props.background};
+`
 
 const AdminControls = props => {
 	const { setChangeEncounter, handleTimer, handleReset, handleMessage, handleReadyCheck } = props
@@ -8,27 +28,21 @@ const AdminControls = props => {
 	return (
 		<React.Fragment>
 			<div style={{ margin: '10px 0' }}>
-				<button
+				<Button
 					type="button"
-					style={{
-						border: '1px solid white',
-						borderRadius: '10px',
-						padding: '7px 15px',
-						width: '100%',
-						color: colors.primaryText,
-						backgroundColor: colors.background,
-					}}
+					color={colors.primaryText}
+					background={colors.background}
 					onClick={() => {
 						setChangeEncounter(true)
 					}}
 				>
 					Change encounter
-				</button>
+				</Button>
 			</div>
 			<div style={{ width: '100%' }}>
-				<div style={{ display: 'flex', flexFlow: 'row nowrap', marginBottom: '10px' }}>
-					<div style={{ flexBasis: '50%' }}>
-						<button
+				<Row>
+					<Col>
+						<Button
 							type="button"
 							style={{
 								border: '1px solid white',
@@ -45,64 +59,47 @@ const AdminControls = props => {
 							}}
 						>
 							Start
-						</button>
-					</div>
-					<div style={{ flexBasis: '50%' }}>
-						<button
+						</Button>
+					</Col>
+					<Col>
+						<Button
 							type="button"
-							style={{
-								border: '1px solid white',
-								borderRadius: '10px',
-								padding: '7px 15px',
-								width: '100%',
-								backgroundColor: colors.yellow,
-							}}
+							color={colors.background}
+							background={colors.yellow}
 							onClick={() => {
 								handleReset()
 							}}
 						>
 							Reset
-						</button>
-					</div>
-				</div>
-				<div style={{ display: 'flex', flexFlow: 'row nowrap', marginTop: '10px' }}>
-					<div style={{ flexBasis: '50%' }}>
-						<button
+						</Button>
+					</Col>
+				</Row>
+				<Row>
+					<Col>
+						<Button
 							type="button"
-							style={{
-								border: '1px solid white',
-								borderRadius: '10px',
-								padding: '7px 15px',
-								width: '100%',
-								color: colors.primaryText,
-								backgroundColor: colors.red,
-							}}
+							color={colors.primaryText}
+							background={colors.red}
 							onClick={() => {
 								handleMessage('WIPE!')
 							}}
 						>
 							Wipe
-						</button>
-					</div>
-					<div style={{ flexBasis: '50%' }}>
-						<button
+						</Button>
+					</Col>
+					<Col>
+						<Button
 							type="button"
-							style={{
-								border: '1px solid white',
-								borderRadius: '10px',
-								padding: '7px 15px',
-								width: '100%',
-								color: colors.primaryText,
-								backgroundColor: colors.blue,
-							}}
+							color={colors.primaryText}
+							background={colors.blue}
 							onClick={() => {
 								handleReadyCheck(true)
 							}}
 						>
 							Ready check
-						</button>
-					</div>
-				</div>
+						</Button>
+					</Col>
+				</Row>
 			</div>
 		</React.Fragment>
 	)

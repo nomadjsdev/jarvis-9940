@@ -35,9 +35,11 @@ const LoadingIcon = styled.div`
 	border-radius: 50%;
 `
 
-export default ({ loadingMessage = 'Loading' }) => (
+const Loading = ({ loadingMessage = 'Loading' }) => (
 	<LoadingContainer>
 		<LoadingIcon />
 		<p>{loadingMessage}</p>
 	</LoadingContainer>
 )
+
+export default Loading

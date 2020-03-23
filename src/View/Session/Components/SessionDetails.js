@@ -1,19 +1,30 @@
 import React from 'react'
+import styled from 'styled-components'
+
+const Container = styled.div`
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-between;
+`
+
+const Col = styled.div`
+	flex-basis: 40%;
+`
 
 const SessionDetails = props => {
 	const { gameName, activityName, sessionId } = props
 
 	return (
-		<div style={{ display: 'flex', flexFlow: 'row nowrap', justifyContent: 'space-between' }}>
-			<div style={{ flexBasis: '40%' }}>
+		<Container>
+			<Col>
 				<p>{gameName}</p>
 				<p>{activityName}</p>
-			</div>
-			<div style={{ flexBasis: '40%' }}>
+			</Col>
+			<Col>
 				<p style={{ marginBottom: '0' }}>Session ID:</p>
 				<p style={{ margin: 0, textAlign: 'right', fontSize: '2em' }}>{sessionId}</p>
-			</div>
-		</div>
+			</Col>
+		</Container>
 	)
 }
 

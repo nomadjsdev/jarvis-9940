@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useHistory, Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
@@ -6,13 +6,13 @@ import { useForm } from 'react-hook-form'
 import { setLocalUsername } from 'Store/Feature/user'
 
 import Modal from 'Component/Global/Modal'
-import { SubmitButton, FieldContainer, FieldWarning } from 'Component/Global/Form'
+import { SubmitContainer, SubmitButton, FieldContainer, FieldWarning, InputField } from 'Component/Global/Form'
 
 const LocalUsername = ({ modalIsOpen }) => {
 	const history = useHistory()
 	const dispatch = useDispatch()
 	const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
-	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [isSubmitting, setIsSubmitting] = React.useState(false)
 	const { register, handleSubmit, errors } = useForm({ mode: 'onChange' })
 
 	const usernameSubmit = data => {
@@ -37,11 +37,10 @@ const LocalUsername = ({ modalIsOpen }) => {
 					<label htmlFor="usernameField">Username</label>
 				</p>
 				<FieldContainer>
-					<input
+					<InputField
 						type="text"
 						id="usernameField"
 						name="usernameField"
-						style={{ width: '100%', height: '30px' }}
 						ref={register({
 							required: { value: true, message: 'Username is required' },
 							minLength: { value: 2, message: 'Username should be between 2 and 16 characters' },
@@ -50,7 +49,7 @@ const LocalUsername = ({ modalIsOpen }) => {
 					/>
 					{errors?.usernameField?.message && <FieldWarning>!!</FieldWarning>}
 				</FieldContainer>
-				<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+				<SubmitContainer>
 					<SubmitButton
 						type="button"
 						onClick={() => {
@@ -62,7 +61,7 @@ const LocalUsername = ({ modalIsOpen }) => {
 					<SubmitButton type="submit" disabled={isSubmitting}>
 						Submit
 					</SubmitButton>
-				</div>
+				</SubmitContainer>
 			</form>
 			<p>
 				Want to create a new session instead?{' '}

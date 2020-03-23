@@ -43,17 +43,25 @@ export const setLocalColor = colorMode => dispatch => {
 export const createUser = (uid, email, username) => dispatch => {
 	dispatch(requestNewUser())
 
-	// TODO: Check username not already in use?
-	// Use separate table for all known usernames - array? How to store in NoSQL?
-
 	const initialUserState = { email, username }
+	const userLowerCaps = username.toLowerCase()
 
 	myFirebase
 		.database()
 		.ref(`users/${uid}`)
 		.set(initialUserState)
 		.then(() => {
-			dispatch(receiveNewUser({ email, username }))
+			myFirebase
+				.database()
+				.ref(`userList`)
+				.update({ [userLowerCaps]: true })
+				.then(() => {
+					dispatch(receiveNewUser({ email, username }))
+				})
+				.catch(error => {
+					console.log(error)
+					dispatch(newUserError(error.message))
+				})
 		})
 		.catch(error => {
 			console.log(error)
@@ -62,8 +70,6 @@ export const createUser = (uid, email, username) => dispatch => {
 }
 
 export const fetchUser = uid => dispatch => {
-	// TODO: Fetch from localstorage for faster load
-	// then fetch from firestore (if last fetch was > certain time?,) and update localstorage
 	dispatch(requestLoadUser())
 
 	myFirebase

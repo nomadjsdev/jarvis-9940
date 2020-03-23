@@ -1,14 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React from 'react'
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
-import { LAST_UPDATED } from 'Utils/Constants'
+import { LAST_UPDATED, MAX_SESSION_AGE } from 'Utils/Constants'
 import { getCacheItem, setCacheItem } from 'Utils/Cache'
 import { Fetch, Update } from 'Utils/Query'
 
 import myFirebase from 'Service/Firebase'
-
-import useBreakpoint from 'Hook/useBreakpoint'
 
 import LocalUsernameForm from 'Component/LocalUsernameForm'
 import Loading from 'Component/Global/Loading'
@@ -25,7 +23,6 @@ const Session = () => {
 	// TODO / FIXME: SO MANY RENDERS
 	// TODO / FIXME: Too many useEffects fetching data in sequence
 	// TODO: Setup multiple websocket connections for data / chat etc
-	// TODO: Use isActive when fetching data
 
 	const { sessionId = null } = useParams()
 	const isAuthenticated = useSelector(state => state.auth?.isAuthenticated)
@@ -40,36 +37,34 @@ const Session = () => {
 		return <LocalUsernameForm />
 	}
 
-	const { colHeight } = useBreakpoint()
-
 	const uid = useSelector(state => state.auth?.user?.uid)
 	const username = useSelector(state => state.user?.details?.username)
 	const colorMode = useSelector(state => state.user?.colorMode)
 
-	const [isLoading, setIsLoading] = useState(true)
-	const [loadingMessage, setLoadingMessage] = useState(null)
+	const [isLoading, setIsLoading] = React.useState(true)
+	const [loadingMessage, setLoadingMessage] = React.useState(null)
 
-	const [isValid, setIsValid] = useState(false)
-	const [changeEncounter, setChangeEncounter] = useState(false)
+	const [isValid, setIsValid] = React.useState(false)
+	const [changeEncounter, setChangeEncounter] = React.useState(false)
 
-	const [activityVal, setActivityVal] = useState(null)
-	const [encounterVal, setEncounterVal] = useState(null)
-	const [gameVal, setGameVal] = useState(null)
-	const [layoutVal, setLayoutVal] = useState(null)
-	const [messageVal, setMessageVal] = useState(null)
-	const [ownerIdVal, setOwnerIdVal] = useState(null)
-	const [readyCheckVal, setReadyCheckVal] = useState(null)
-	const [gameName, setGameName] = useState(null)
-	const [activityName, setActivityName] = useState(null)
-	const [activityEncounters, setActivityEncounters] = useState(null)
-	const [encounters, setEncounters] = useState(null)
-	const [encounterTemplates, setEncounterTemplates] = useState(null)
-	const [displayMessage, setDisplayMessage] = useState(null)
+	const [activityVal, setActivityVal] = React.useState(null)
+	const [encounterVal, setEncounterVal] = React.useState(null)
+	const [gameVal, setGameVal] = React.useState(null)
+	const [layoutVal, setLayoutVal] = React.useState(null)
+	const [messageVal, setMessageVal] = React.useState(null)
+	const [ownerIdVal, setOwnerIdVal] = React.useState(null)
+	const [readyCheckVal, setReadyCheckVal] = React.useState(null)
+	const [gameName, setGameName] = React.useState(null)
+	const [activityName, setActivityName] = React.useState(null)
+	const [activityEncounters, setActivityEncounters] = React.useState(null)
+	const [encounters, setEncounters] = React.useState(null)
+	const [encounterTemplates, setEncounterTemplates] = React.useState(null)
+	const [displayMessage, setDisplayMessage] = React.useState(null)
 
 	// Preserve interval across renders
-	let messageTimer = useRef()
+	let messageTimer = React.useRef()
 
-	useEffect(() => {
+	React.useEffect(() => {
 		let firebaseRef = myFirebase.database().ref(`sessions/${sessionId.toUpperCase()}`)
 		let listener
 		if (sessionId) {
@@ -77,16 +72,23 @@ const Session = () => {
 
 			listener = firebaseRef.on('value', snapshot => {
 				if (snapshot.exists()) {
-					const { activity, encounter, game, layout, message, ownerId, readyCheck } = snapshot.val()
-					// TODO: `created timestamp` check
-					setIsValid(true)
-					setActivityVal(activity)
-					setEncounterVal(encounter)
-					setGameVal(game)
-					setLayoutVal(layout)
-					setMessageVal(message)
-					setOwnerIdVal(ownerId)
-					setReadyCheckVal(readyCheck)
+					const { created, activity, encounter, game, layout, message, ownerId, readyCheck } = snapshot.val()
+
+					if (created < Math.floor(Date.now() / 1000) - MAX_SESSION_AGE) {
+						firebaseRef.off('value', listener)
+						setLoadingMessage('This session has expired')
+						setIsValid(false)
+						setIsLoading(false)
+					} else {
+						setIsValid(true)
+						setActivityVal(activity)
+						setEncounterVal(encounter)
+						setGameVal(game)
+						setLayoutVal(layout)
+						setMessageVal(message)
+						setOwnerIdVal(ownerId)
+						setReadyCheckVal(readyCheck)
+					}
 				} else {
 					firebaseRef.off('value', listener)
 					setIsLoading(false)
@@ -106,7 +108,7 @@ const Session = () => {
 		return () => firebaseRef.off('value', listener)
 	}, [sessionId])
 
-	useEffect(() => {
+	React.useEffect(() => {
 		if (
 			gameName &&
 			activityName &&
@@ -122,7 +124,7 @@ const Session = () => {
 	}, [gameName, activityName, activityEncounters, encounters, encounterTemplates, layoutVal, ownerIdVal, readyCheckVal])
 
 	// Get game name
-	useEffect(() => {
+	React.useEffect(() => {
 		if (gameVal) {
 			const game = getCacheItem(`cache-${gameVal}-name`)
 
@@ -138,7 +140,7 @@ const Session = () => {
 	}, [gameVal])
 
 	// Get activity name
-	useEffect(() => {
+	React.useEffect(() => {
 		if (activityVal) {
 			const activity = getCacheItem(`cache-${activityVal}-name`)
 
@@ -154,7 +156,7 @@ const Session = () => {
 	}, [activityVal])
 
 	// Get activity encounters
-	useEffect(() => {
+	React.useEffect(() => {
 		if (activityVal) {
 			const activityE = getCacheItem(`cache-${activityVal}-encounters`)
 
@@ -207,14 +209,14 @@ const Session = () => {
 	}
 
 	// Fetch encounter templates
-	useEffect(() => {
+	React.useEffect(() => {
 		if (activityEncounters) {
 			fetchEncounterTemplates()
 		}
 	}, [activityEncounters])
 
 	// Update display message using timer
-	useEffect(() => {
+	React.useEffect(() => {
 		if (messageVal || messageVal === '') {
 			if (messageVal === '') {
 				setDisplayMessage(null)
@@ -344,17 +346,14 @@ const Session = () => {
 	}
 
 	if (isLoading) {
-		return (
-			<React.Fragment>
-				<Loading loadingMessage={loadingMessage} />
-			</React.Fragment>
-		)
+		return <Loading loadingMessage={loadingMessage} />
 	}
 
 	if (sessionId && !isValid && !isLoading) {
 		return (
 			<React.Fragment>
-				<h1>Session ID isn't valid</h1>
+				<h2>Session ID isn't valid</h2>
+				{loadingMessage && <h4>{loadingMessage}</h4>}
 			</React.Fragment>
 		)
 	}
@@ -405,11 +404,7 @@ const Session = () => {
 				)}
 
 				{encounterVal && encounterTemplates?.[encounterVal] && (
-					<div
-						style={{
-							width: '100%',
-						}}
-					>
+					<div style={{ width: '100%' }}>
 						{encounterTemplates[encounterVal].map((row, rowIndex) => {
 							return (
 								<div
@@ -435,7 +430,7 @@ const Session = () => {
 																	? 'center'
 																	: 'flex-start',
 															width: '100%',
-															minHeight: colHeight,
+															minHeight: '6em',
 														}}
 													>
 														<Item

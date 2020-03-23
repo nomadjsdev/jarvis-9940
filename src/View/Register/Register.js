@@ -1,19 +1,31 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
 
 import { registerUser } from 'Store/Feature/auth'
 
-import { SubmitButton, FieldContainer, FieldWarning } from 'Component/Global/Form'
+import { Page, PrimarySection, SecondarySection } from 'Component/Global/Layout'
+import {
+	SubmitContainer,
+	SubmitButton,
+	FieldContainer,
+	FieldWarning,
+	InputField,
+	ErrorText,
+} from 'Component/Global/Form'
 
 const Register = () => {
 	const dispatch = useDispatch()
 	const registerError = useSelector(state => state.auth.registerError)
 	const { register, handleSubmit, errors } = useForm({ mode: 'onChange' })
 
-	const [isSubmitting, setIsSubmitting] = useState(false)
-	const [viewPassword, setViewPassword] = useState(false)
+	const [isSubmitting, setIsSubmitting] = React.useState(false)
+	const [viewPassword, setViewPassword] = React.useState(false)
+
+	React.useEffect(() => {
+		setIsSubmitting(false)
+	}, [registerError])
 
 	const onSubmit = data => {
 		setIsSubmitting(true)
@@ -24,18 +36,17 @@ const Register = () => {
 	return (
 		<React.Fragment>
 			<h1>Register</h1>
-			<div style={{ display: 'flex', flexDirection: 'column', minHeight: '70vh' }}>
-				<div style={{ flex: '0 0 30%' }}>
+			<Page>
+				<PrimarySection>
 					<form onSubmit={handleSubmit(onSubmit)}>
 						<p>
 							<label htmlFor="usernameField">Choose a username</label>
 						</p>
 						<FieldContainer>
-							<input
+							<InputField
 								type="text"
 								id="usernameField"
 								name="usernameField"
-								style={{ width: '100%', height: '30px' }}
 								ref={register({
 									required: { value: true, message: 'Username is required' },
 									minLength: { value: 3, message: 'Username must be at least 3 characters' },
@@ -48,11 +59,10 @@ const Register = () => {
 							<label htmlFor="emailField">Enter your email address</label>
 						</p>
 						<FieldContainer>
-							<input
+							<InputField
 								type="email"
 								id="emailField"
 								name="emailField"
-								style={{ width: '100%', height: '30px' }}
 								ref={register({
 									required: { value: true, message: 'Email address is required' },
 								})}
@@ -71,26 +81,26 @@ const Register = () => {
 							</span>
 						</p>
 						<FieldContainer>
-							<input
+							<InputField
 								type={viewPassword ? 'text' : 'password'}
 								id="passwordField"
 								name="passwordField"
-								style={{ width: '100%', height: '30px' }}
 								ref={register({
 									required: { value: true, message: 'Password is required' },
 								})}
 							/>
 							{errors?.passwordField?.message && <FieldWarning>!!</FieldWarning>}
 						</FieldContainer>
-						<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+						<SubmitContainer>
+							{isSubmitting && <p>Registering...</p>}
 							<SubmitButton type="submit" disabled={isSubmitting}>
 								Join
 							</SubmitButton>
-						</div>
+						</SubmitContainer>
 					</form>
-				</div>
-				<div style={{ flex: '1 0 30%' }}>
-					<p style={{ color: 'red', fontWeight: 'bold' }}>
+				</PrimarySection>
+				<SecondarySection>
+					<ErrorText>
 						{registerError && <span>{registerError}</span>}
 						{errors?.usernameField?.message && <span>{errors.usernameField.message}</span>}
 						{errors?.emailField?.message && <span>{errors.emailField.message}</span>}
@@ -99,9 +109,9 @@ const Register = () => {
 							!errors?.emailField?.message &&
 							!errors?.passwordField?.message &&
 							!registerError && <span>&nbsp;</span>}
-					</p>
-				</div>
-				<div style={{ flex: '1 0 30%' }}>
+					</ErrorText>
+				</SecondarySection>
+				<SecondarySection>
 					<p>
 						Already have an account? <Link to="/login">Login here.</Link>
 					</p>
@@ -111,8 +121,8 @@ const Register = () => {
 					<p>
 						Want to join a session without registering? <Link to="/join">Go for it!</Link>
 					</p>
-				</div>
-			</div>
+				</SecondarySection>
+			</Page>
 		</React.Fragment>
 	)
 }

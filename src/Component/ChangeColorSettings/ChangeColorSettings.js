@@ -1,11 +1,16 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import styled from 'styled-components'
 import { ToggleButton, MessageButton, TimerButton } from 'jarvis9940-components'
 
 import { setLocalColor } from 'Store/Feature/user'
 
 import Modal from 'Component/Global/Modal'
-import { SubmitButton } from 'Component/Global/Form'
+import { SubmitContainer, SubmitButton } from 'Component/Global/Form'
+
+const ButtonContainer = styled.div`
+	flex-basis: 50%;
+`
 
 const ChangeColorSettings = ({ modalIsOpen }) => {
 	const dispatch = useDispatch()
@@ -19,18 +24,22 @@ const ChangeColorSettings = ({ modalIsOpen }) => {
 		<Modal>
 			<h2>Colorblind mode</h2>
 			<div style={{ display: 'flex', flexFlow: 'row wrap' }}>
-				<ToggleButton active={false} colorMode={colorMode} style={{ flexBasis: '50%' }}>
-					Inactive
-				</ToggleButton>
-				<ToggleButton active={true} colorMode={colorMode} style={{ flexBasis: '50%' }}>
-					Active
-				</ToggleButton>
-				<MessageButton colorMode={colorMode} style={{ flexBasis: '50%' }}>
-					Message
-				</MessageButton>
-				<TimerButton colorMode={colorMode} style={{ flexBasis: '50%' }}>
-					Timer
-				</TimerButton>
+				<ButtonContainer>
+					<ToggleButton active={false} colorMode={colorMode}>
+						Inactive
+					</ToggleButton>
+				</ButtonContainer>
+				<ButtonContainer>
+					<ToggleButton active={true} colorMode={colorMode}>
+						Active
+					</ToggleButton>
+				</ButtonContainer>
+				<ButtonContainer>
+					<MessageButton colorMode={colorMode}>Message</MessageButton>
+				</ButtonContainer>
+				<ButtonContainer>
+					<TimerButton colorMode={colorMode}>Timer</TimerButton>
+				</ButtonContainer>
 			</div>
 			<div style={{ display: 'flex', flexFlow: 'column nowrap' }}>
 				<SubmitButton
@@ -79,7 +88,7 @@ const ChangeColorSettings = ({ modalIsOpen }) => {
 					Monochromacy
 				</SubmitButton>
 			</div>
-			<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+			<SubmitContainer>
 				<SubmitButton
 					type="button"
 					onClick={() => {
@@ -88,7 +97,7 @@ const ChangeColorSettings = ({ modalIsOpen }) => {
 				>
 					Close
 				</SubmitButton>
-			</div>
+			</SubmitContainer>
 		</Modal>
 	)
 }

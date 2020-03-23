@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { useSelector } from 'react-redux'
 import { useHistory, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
@@ -6,19 +6,27 @@ import { useForm } from 'react-hook-form'
 import myFirebase from 'Service/Firebase'
 
 import LocalUsernameForm from 'Component/LocalUsernameForm'
-import { SubmitButton, FieldContainer, FieldWarning } from 'Component/Global/Form'
+import { Page, PrimarySection, SecondarySection } from 'Component/Global/Layout'
+import {
+	SubmitContainer,
+	SubmitButton,
+	FieldContainer,
+	FieldWarning,
+	InputField,
+	ErrorText,
+} from 'Component/Global/Form'
 
 const Join = () => {
 	let history = useHistory()
 	const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
 	const localUsername = useSelector(state => state.user.localUsername)
 
-	const [sessionError, setSessionError] = useState(null)
-	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [sessionError, setSessionError] = React.useState(null)
+	const [isSubmitting, setIsSubmitting] = React.useState(false)
 
 	const { register, handleSubmit, errors } = useForm({ mode: 'onChange' })
 
-	useEffect(() => {
+	React.useEffect(() => {
 		setSessionError(null)
 	}, [errors?.sessionIdField])
 
@@ -43,8 +51,8 @@ const Join = () => {
 
 	return (
 		<React.Fragment>
-			<div style={{ display: 'flex', flexDirection: 'column', minHeight: '70vh' }}>
-				<div style={{ flex: '0 0 30%' }}>
+			<Page>
+				<PrimarySection>
 					{!isAuthenticated && !localUsername && <LocalUsernameForm />}
 
 					{(isAuthenticated || localUsername) && (
@@ -55,11 +63,10 @@ const Join = () => {
 									<label htmlFor="sessionIdField">Enter the session ID</label>
 								</p>
 								<FieldContainer>
-									<input
+									<InputField
 										type="text"
 										id="sessionIdField"
 										name="sessionIdField"
-										style={{ width: '100%', height: '30px' }}
 										ref={register({
 											required: { value: true, message: 'Session ID is required' },
 											minLength: { value: 6, message: 'Session ID should be 6 characters' },
@@ -68,29 +75,30 @@ const Join = () => {
 									/>
 									{errors?.sessionIdField?.message && <FieldWarning>!!</FieldWarning>}
 								</FieldContainer>
-								<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+								<SubmitContainer>
+									{isSubmitting && <p>Finding session...</p>}
 									<SubmitButton type="submit" disabled={isSubmitting}>
 										Join
 									</SubmitButton>
-								</div>
+								</SubmitContainer>
 							</form>
 						</React.Fragment>
 					)}
-				</div>
-				<div style={{ flex: '1 0 30%' }}>
-					<p style={{ color: 'red', fontWeight: 'bold' }}>
+				</PrimarySection>
+				<SecondarySection>
+					<ErrorText>
 						{errors?.sessionIdField?.message && <span>{errors.sessionIdField.message}</span>}
 						{sessionError && <span>{sessionError}</span>}
 						{!errors?.sessionIdField?.message && !sessionError && <span>&nbsp;</span>}
-					</p>
-				</div>
-				<div style={{ flex: '1 0 30%' }}>
+					</ErrorText>
+				</SecondarySection>
+				<SecondarySection>
 					<p>
 						Want to create a new session instead?{' '}
 						{isAuthenticated ? <Link to="/create">Start here!</Link> : <Link to="/register">Register now!</Link>}
 					</p>
-				</div>
-			</div>
+				</SecondarySection>
+			</Page>
 		</React.Fragment>
 	)
 }

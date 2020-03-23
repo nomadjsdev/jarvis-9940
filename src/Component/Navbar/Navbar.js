@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { useLocation, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -7,22 +7,33 @@ import { SubmitButton } from 'Component/Global/Form'
 import LocalUsernameForm from 'Component/LocalUsernameForm'
 import ChangeColorSettings from 'Component/ChangeColorSettings'
 
-import LogoImg from 'Assets/Images/robot.64.png'
+import ImgSrc from 'Assets/Images/robot.64.png'
 import SettingsImg from 'Assets/Images/settings.64.png'
 import ProfileImg from 'Assets/Images/profile.64.png'
 
-import { StyledNavLink, MenuContainer, DropdownContainer } from './Navbar.styles'
+import {
+	NavbarContainer,
+	StyledNavLink,
+	MenuContainer,
+	DropdownContainer,
+	LogoImg,
+	LogoText,
+	HeaderImgContainer,
+	HeaderImg,
+} from './Navbar.styles'
 
 const Logo = () => (
 	<Link to="/">
-		<img src={LogoImg} style={{ maxWidth: '50px', maxHeight: '50px', padding: '10px' }} />
-		{/* <h2 style={{ marginLeft: '20px' }}>Jarvis 99-40</h2> */}
+		<div style={{ display: 'flex', flexFlow: 'row nowrap' }}>
+			<LogoImg src={ImgSrc} />
+			<LogoText>Jarvis 99-40</LogoText>
+		</div>
 	</Link>
 )
 
 const LocalUsername = () => {
 	const localUsername = useSelector(state => state.user.localUsername)
-	const [changeUsername, setChangeUsername] = useState(false)
+	const [changeUsername, setChangeUsername] = React.useState(false)
 
 	return (
 		<React.Fragment>
@@ -58,15 +69,14 @@ const ColorblindMode = ({ setChangeColorSettings, setMenuIsOpen }) => (
 )
 
 const SettingsIcon = ({ menuIsOpen, setMenuIsOpen }) => {
-	const [changeColorSettings, setChangeColorSettings] = useState(false)
+	const [changeColorSettings, setChangeColorSettings] = React.useState(false)
 
 	return (
 		<React.Fragment>
 			{changeColorSettings && <ChangeColorSettings modalIsOpen={setChangeColorSettings} />}
 
-			<div style={{ display: 'flex', alignItems: 'center', position: 'relative', margin: '10px' }}>
-				<img
-					style={{ maxWidth: '40px', maxHeight: '40px' }}
+			<HeaderImgContainer>
+				<HeaderImg
 					src={SettingsImg}
 					onClick={() => {
 						setMenuIsOpen(prevState => (prevState === 'settings' ? null : 'settings'))
@@ -75,7 +85,7 @@ const SettingsIcon = ({ menuIsOpen, setMenuIsOpen }) => {
 				<DropdownContainer isOpen={menuIsOpen === 'settings'}>
 					<ColorblindMode setChangeColorSettings={setChangeColorSettings} setMenuIsOpen={setMenuIsOpen} />
 				</DropdownContainer>
-			</div>
+			</HeaderImgContainer>
 		</React.Fragment>
 	)
 }
@@ -85,9 +95,8 @@ const ProfileIcon = ({ menuIsOpen, setMenuIsOpen, isAuthenticated }) => {
 	const username = useSelector(state => state.user?.details?.username)
 
 	return (
-		<div style={{ display: 'flex', alignItems: 'center', position: 'relative', marginRight: '10px' }}>
-			<img
-				style={{ maxWidth: '40px', maxHeight: '40px' }}
+		<HeaderImgContainer>
+			<HeaderImg
 				src={ProfileImg}
 				onClick={() => {
 					setMenuIsOpen(prevState => (prevState === 'profile' ? null : 'profile'))
@@ -115,41 +124,33 @@ const ProfileIcon = ({ menuIsOpen, setMenuIsOpen, isAuthenticated }) => {
 					</React.Fragment>
 				)}
 			</DropdownContainer>
-		</div>
+		</HeaderImgContainer>
 	)
 }
 
-export default () => {
+const Navbar = () => {
 	const isAuthenticated = useSelector(state => state.auth.isAuthenticated)
 
-	const [menuIsOpen, setMenuIsOpen] = useState(null)
+	const [menuIsOpen, setMenuIsOpen] = React.useState(null)
 	let location = useLocation()
-	useEffect(() => {
+	React.useEffect(() => {
 		setMenuIsOpen(null)
 	}, [location])
 
 	return (
-		<div style={{ borderBottom: '1px solid' }}>
-			<div
-				style={{
-					display: 'flex',
-					flexFlow: 'row wrap',
-					justifyContent: 'space-between',
-					maxWidth: '1024px',
-					margin: '0 auto',
-				}}
-			>
-				<Logo />
+		<NavbarContainer>
+			<Logo />
 
-				<MenuContainer>
-					<StyledNavLink to="/join">Join</StyledNavLink>
-					{isAuthenticated && <StyledNavLink to="/create">Create</StyledNavLink>}
+			<MenuContainer>
+				<StyledNavLink to="/join">Join</StyledNavLink>
+				{isAuthenticated && <StyledNavLink to="/create">Create</StyledNavLink>}
 
-					<SettingsIcon menuIsOpen={menuIsOpen} setMenuIsOpen={setMenuIsOpen} />
+				<SettingsIcon menuIsOpen={menuIsOpen} setMenuIsOpen={setMenuIsOpen} />
 
-					<ProfileIcon menuIsOpen={menuIsOpen} setMenuIsOpen={setMenuIsOpen} isAuthenticated={isAuthenticated} />
-				</MenuContainer>
-			</div>
-		</div>
+				<ProfileIcon menuIsOpen={menuIsOpen} setMenuIsOpen={setMenuIsOpen} isAuthenticated={isAuthenticated} />
+			</MenuContainer>
+		</NavbarContainer>
 	)
 }
+
+export default Navbar
