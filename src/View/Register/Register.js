@@ -100,16 +100,16 @@ const Register = () => {
 					</form>
 				</PrimarySection>
 				<SecondarySection>
-					<ErrorText>
-						{registerError && <span>{registerError}</span>}
-						{errors?.usernameField?.message && <span>{errors.usernameField.message}</span>}
-						{errors?.emailField?.message && <span>{errors.emailField.message}</span>}
-						{errors?.passwordField?.message && <span>{errors.passwordField.message}</span>}
+					<span>
+						{registerError && <ErrorText>{registerError}</ErrorText>}
+						{errors?.usernameField?.message && <ErrorText>{errors.usernameField.message}</ErrorText>}
+						{errors?.emailField?.message && <ErrorText>{errors.emailField.message}</ErrorText>}
+						{errors?.passwordField?.message && <ErrorText>{errors.passwordField.message}</ErrorText>}
 						{!errors?.usernameField?.message &&
 							!errors?.emailField?.message &&
 							!errors?.passwordField?.message &&
-							!registerError && <span>&nbsp;</span>}
-					</ErrorText>
+							!registerError && <ErrorText>&nbsp;</ErrorText>}
+					</span>
 				</SecondarySection>
 				<SecondarySection>
 					<p>

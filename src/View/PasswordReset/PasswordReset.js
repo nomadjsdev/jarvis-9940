@@ -56,11 +56,11 @@ const PasswordReset = () => {
 					</form>
 				</PrimarySection>
 				<SecondarySection>
-					<ErrorText>
-						{errors?.emailField?.message && <span>{errors.emailField.message}</span>}
-						{resetError && <span>{resetError}</span>}
-						{!errors?.emailField?.message && !resetError && <span>&nbsp;</span>}
-					</ErrorText>
+					<span>
+						{errors?.emailField?.message && <ErrorText>{errors.emailField.message}</ErrorText>}
+						{resetError && <ErrorText>{resetError}</ErrorText>}
+						{!errors?.emailField?.message && !resetError && <ErrorText>&nbsp;</ErrorText>}
+					</span>
 				</SecondarySection>
 				<SecondarySection>
 					<p>

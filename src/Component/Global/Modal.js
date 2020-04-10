@@ -4,12 +4,12 @@ import styled from 'styled-components'
 import { colors } from 'Styles'
 
 const ModalContainer = styled.div`
-	position: fixed; /* Stay in place */
-	z-index: 5; /* Sit on top */
+	position: fixed;
+	z-index: 5;
 	left: 0;
 	top: 0;
-	width: 100%; /* Full width */
-	height: 100%; /* Full height */
+	width: 100%;
+	height: 100%;
 	overflow: auto; /* Enable scroll if needed */
 	background-color: rgb(0, 0, 0); /* Fallback color */
 	background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
@@ -17,10 +17,11 @@ const ModalContainer = styled.div`
 
 const ModalContents = styled.div`
 	background-color: ${colors.background};
-	margin: 20% auto; /* 20% from the top and centered */
+	margin: 100px auto;
 	padding: 0 20px;
 	border: 1px solid #888;
-	width: 80%; /* Could be more or less; depending on screen size */
+	width: 80%;
+	max-width: 1000px;
 `
 
 export default ({ children }) => (

@@ -84,12 +84,14 @@ const Login = () => {
 					</form>
 				</PrimarySection>
 				<SecondarySection>
-					<ErrorText>
-						{errors?.emailField?.message && <span>{errors.emailField.message}</span>}
-						{errors?.passwordField?.message && <span>{errors.passwordField.message}</span>}
-						{loginError && <span>{loginError}</span>}
-						{!errors?.emailField?.message && !errors?.passwordField?.message && !loginError && <span>&nbsp;</span>}
-					</ErrorText>
+					<span>
+						{errors?.emailField?.message && <ErrorText>{errors.emailField.message}</ErrorText>}
+						{errors?.passwordField?.message && <ErrorText>{errors.passwordField.message}</ErrorText>}
+						{loginError && <ErrorText>{loginError}</ErrorText>}
+						{!errors?.emailField?.message && !errors?.passwordField?.message && !loginError && (
+							<ErrorText>&nbsp;</ErrorText>
+						)}
+					</span>
 				</SecondarySection>
 				<SecondarySection>
 					<p>

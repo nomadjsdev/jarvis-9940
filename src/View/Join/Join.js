@@ -50,56 +50,54 @@ const Join = () => {
 	}
 
 	return (
-		<React.Fragment>
-			<Page>
-				<PrimarySection>
-					{!isAuthenticated && !localUsername && <LocalUsernameForm />}
+		<Page>
+			<PrimarySection>
+				{!isAuthenticated && !localUsername && <LocalUsernameForm />}
 
-					{(isAuthenticated || localUsername) && (
-						<React.Fragment>
-							<h1>Join a session</h1>
-							<form onSubmit={handleSubmit(sessionSubmit)}>
-								<p>
-									<label htmlFor="sessionIdField">Enter the session ID</label>
-								</p>
-								<FieldContainer>
-									<InputField
-										type="text"
-										id="sessionIdField"
-										name="sessionIdField"
-										ref={register({
-											required: { value: true, message: 'Session ID is required' },
-											minLength: { value: 6, message: 'Session ID should be 6 characters' },
-											maxLength: { value: 6, message: 'Session ID should be 6 characters' },
-										})}
-									/>
-									{errors?.sessionIdField?.message && <FieldWarning>!!</FieldWarning>}
-								</FieldContainer>
-								<SubmitContainer>
-									{isSubmitting && <p>Finding session...</p>}
-									<SubmitButton type="submit" disabled={isSubmitting}>
-										Join
-									</SubmitButton>
-								</SubmitContainer>
-							</form>
-						</React.Fragment>
-					)}
-				</PrimarySection>
-				<SecondarySection>
-					<ErrorText>
-						{errors?.sessionIdField?.message && <span>{errors.sessionIdField.message}</span>}
-						{sessionError && <span>{sessionError}</span>}
-						{!errors?.sessionIdField?.message && !sessionError && <span>&nbsp;</span>}
-					</ErrorText>
-				</SecondarySection>
-				<SecondarySection>
-					<p>
-						Want to create a new session instead?{' '}
-						{isAuthenticated ? <Link to="/create">Start here!</Link> : <Link to="/register">Register now!</Link>}
-					</p>
-				</SecondarySection>
-			</Page>
-		</React.Fragment>
+				{(isAuthenticated || localUsername) && (
+					<div style={{ maxWidth: '300px', margin: '0 auto' }}>
+						<h1>Join a session</h1>
+						<form onSubmit={handleSubmit(sessionSubmit)}>
+							<p>
+								<label htmlFor="sessionIdField">Enter the session ID</label>
+							</p>
+							<FieldContainer>
+								<InputField
+									type="text"
+									id="sessionIdField"
+									name="sessionIdField"
+									ref={register({
+										required: { value: true, message: 'Session ID is required' },
+										minLength: { value: 6, message: 'Session ID should be 6 characters' },
+										maxLength: { value: 6, message: 'Session ID should be 6 characters' },
+									})}
+								/>
+								{errors?.sessionIdField?.message && <FieldWarning>!!</FieldWarning>}
+							</FieldContainer>
+							<SubmitContainer>
+								{isSubmitting && <p>Finding session...</p>}
+								<SubmitButton type="submit" disabled={isSubmitting}>
+									Join
+								</SubmitButton>
+							</SubmitContainer>
+						</form>
+					</div>
+				)}
+			</PrimarySection>
+			<SecondarySection>
+				<span>
+					{errors?.sessionIdField?.message && <ErrorText>{errors.sessionIdField.message}</ErrorText>}
+					{sessionError && <ErrorText>{sessionError}</ErrorText>}
+					{!errors?.sessionIdField?.message && !sessionError && <ErrorText>&nbsp;</ErrorText>}
+				</span>
+			</SecondarySection>
+			<SecondarySection>
+				<p>
+					Want to create a new session instead?{' '}
+					{isAuthenticated ? <Link to="/create">Start here!</Link> : <Link to="/register">Register now!</Link>}
+				</p>
+			</SecondarySection>
+		</Page>
 	)
 }
 

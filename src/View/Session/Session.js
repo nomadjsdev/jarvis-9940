@@ -8,6 +8,7 @@ import { Fetch, Update } from 'Utils/Query'
 
 import myFirebase from 'Service/Firebase'
 
+import { Page, PrimarySection } from 'Component/Global/Layout'
 import LocalUsernameForm from 'Component/LocalUsernameForm'
 import Loading from 'Component/Global/Loading'
 
@@ -359,7 +360,7 @@ const Session = () => {
 	}
 
 	return (
-		<React.Fragment>
+		<Page>
 			{readyCheckVal && readyCheckVal.active && (
 				<ReadyCheck
 					uid={uid}
@@ -382,78 +383,86 @@ const Session = () => {
 				/>
 			)}
 
-			<SessionDetails gameName={gameName} activityName={activityName} sessionId={sessionId} />
+			<PrimarySection
+				style={{
+					width: '100%',
+					maxWidth: '600px',
+					margin: '0 auto',
+				}}
+			>
+				<SessionDetails gameName={gameName} activityName={activityName} sessionId={sessionId} />
 
-			{uid === ownerIdVal && (
-				<AdminControls
-					setChangeEncounter={setChangeEncounter}
-					handleTimer={handleTimer}
-					handleReset={handleReset}
-					handleMessage={handleMessage}
-					handleReadyCheck={handleReadyCheck}
-				/>
-			)}
-
-			<MessageDisplay displayMessage={displayMessage} encounterName={encounters?.[encounterVal]?.name} />
-
-			<div>
-				{encounters && encounterVal && encounterTemplates && !encounterTemplates?.[encounterVal] && (
-					<React.Fragment>
-						<h3>No template found for {encounters?.[encounterVal]?.name}</h3>
-					</React.Fragment>
+				{uid === ownerIdVal && (
+					<AdminControls
+						setChangeEncounter={setChangeEncounter}
+						handleTimer={handleTimer}
+						handleReset={handleReset}
+						handleMessage={handleMessage}
+						handleReadyCheck={handleReadyCheck}
+					/>
 				)}
 
-				{encounterVal && encounterTemplates?.[encounterVal] && (
-					<div style={{ width: '100%' }}>
-						{encounterTemplates[encounterVal].map((row, rowIndex) => {
-							return (
-								<div
-									key={rowIndex}
-									style={{
-										display: 'flex',
-										flexFlow: 'row nowrap',
-										justifyContent: 'space-between',
-									}}
-								>
-									{row.map((col, colIndex) => {
-										return (
-											<React.Fragment key={colIndex}>
-												{col.map(item => (
-													<div
-														key={item.id}
-														style={{
-															display: 'flex',
-															justifyContent:
-																item.alignment === 'right'
-																	? 'flex-end'
-																	: item.alignment === 'center'
-																	? 'center'
-																	: 'flex-start',
-															width: '100%',
-															minHeight: '6em',
-														}}
-													>
-														<Item
-															item={item}
-															colorMode={colorMode}
-															layoutVal={layoutVal}
-															handleGroup={handleGroup}
-															handleMessage={handleMessage}
-															handleTimer={handleTimer}
-															handleToggle={handleToggle}
-														/>
-													</div>
-												))}
-											</React.Fragment>
-										)
-									})}
-								</div>
-							)
-						})}
-					</div>
-				)}
-			</div>
-		</React.Fragment>
+				<MessageDisplay displayMessage={displayMessage} encounterName={encounters?.[encounterVal]?.name} />
+
+				<React.Fragment>
+					{encounters && encounterVal && encounterTemplates && !encounterTemplates?.[encounterVal] && (
+						<React.Fragment>
+							<h3>No template found for {encounters?.[encounterVal]?.name}</h3>
+						</React.Fragment>
+					)}
+
+					{encounterVal && encounterTemplates?.[encounterVal] && (
+						<div style={{ width: '100%' }}>
+							{encounterTemplates[encounterVal].map((row, rowIndex) => {
+								return (
+									<div
+										key={rowIndex}
+										style={{
+											display: 'flex',
+											flexFlow: 'row nowrap',
+											justifyContent: 'space-between',
+										}}
+									>
+										{row.map((col, colIndex) => {
+											return (
+												<React.Fragment key={colIndex}>
+													{col.map(item => (
+														<div
+															key={item.id}
+															style={{
+																display: 'flex',
+																justifyContent:
+																	item.alignment === 'right'
+																		? 'flex-end'
+																		: item.alignment === 'center'
+																		? 'center'
+																		: 'flex-start',
+																width: '100%',
+																minHeight: '6em',
+															}}
+														>
+															<Item
+																item={item}
+																colorMode={colorMode}
+																layoutVal={layoutVal}
+																handleGroup={handleGroup}
+																handleMessage={handleMessage}
+																handleTimer={handleTimer}
+																handleToggle={handleToggle}
+															/>
+														</div>
+													))}
+												</React.Fragment>
+											)
+										})}
+									</div>
+								)
+							})}
+						</div>
+					)}
+				</React.Fragment>
+			</PrimarySection>
+		</Page>
 	)
 }
 

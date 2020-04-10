@@ -8,7 +8,6 @@ import LocalUsernameForm from 'Component/LocalUsernameForm'
 import ChangeColorSettings from 'Component/ChangeColorSettings'
 
 import ImgSrc from 'Assets/Images/robot.64.png'
-import SettingsImg from 'Assets/Images/settings.64.png'
 import ProfileImg from 'Assets/Images/profile.64.png'
 
 import {
@@ -39,7 +38,7 @@ const LocalUsername = () => {
 		<React.Fragment>
 			{changeUsername && <LocalUsernameForm modalIsOpen={setChangeUsername} />}
 
-			<div style={{ display: 'flex', flexFlow: 'column nowrap' }}>
+			<div style={{ display: 'flex', flexFlow: 'column nowrap', width: '100%' }}>
 				{localUsername && <p style={{ padding: '0 20px' }}>{localUsername}</p>}
 				<SubmitButton
 					type="button"
@@ -56,19 +55,23 @@ const LocalUsername = () => {
 }
 
 const ColorblindMode = ({ setChangeColorSettings, setMenuIsOpen }) => (
-	<SubmitButton
-		type="button"
-		style={{ marginBottom: '10px' }}
-		onClick={() => {
-			setMenuIsOpen(null)
-			setChangeColorSettings(true)
-		}}
-	>
-		Colorblind mode
-	</SubmitButton>
+	<div style={{ display: 'flex', flexFlow: 'column nowrap', width: '100%' }}>
+		<SubmitButton
+			type="button"
+			style={{ marginBottom: '10px' }}
+			onClick={() => {
+				setMenuIsOpen(null)
+				setChangeColorSettings(true)
+			}}
+		>
+			Colorblind mode
+		</SubmitButton>
+	</div>
 )
 
-const SettingsIcon = ({ menuIsOpen, setMenuIsOpen }) => {
+const ProfileIcon = ({ menuIsOpen, setMenuIsOpen, isAuthenticated }) => {
+	const dispatch = useDispatch()
+	const username = useSelector(state => state.user?.details?.username)
 	const [changeColorSettings, setChangeColorSettings] = React.useState(false)
 
 	return (
@@ -77,54 +80,38 @@ const SettingsIcon = ({ menuIsOpen, setMenuIsOpen }) => {
 
 			<HeaderImgContainer>
 				<HeaderImg
-					src={SettingsImg}
+					src={ProfileImg}
 					onClick={() => {
-						setMenuIsOpen(prevState => (prevState === 'settings' ? null : 'settings'))
+						setMenuIsOpen(prevState => (prevState === 'profile' ? null : 'profile'))
 					}}
 				/>
-				<DropdownContainer isOpen={menuIsOpen === 'settings'}>
+				<DropdownContainer isOpen={menuIsOpen === 'profile'}>
+					{isAuthenticated && (
+						<React.Fragment>
+							<p style={{ padding: '0 20px' }}>{username}</p>
+							<div style={{ display: 'flex', flexFlow: 'column nowrap', width: '100%' }}>
+								<SubmitButton
+									type="button"
+									onClick={() => {
+										dispatch(logoutUser())
+									}}
+								>
+									Logout
+								</SubmitButton>
+							</div>
+						</React.Fragment>
+					)}
+					{!isAuthenticated && (
+						<React.Fragment>
+							<StyledNavLink to="/register">Register</StyledNavLink>
+							<StyledNavLink to="/login">Login</StyledNavLink>
+							<LocalUsername />
+						</React.Fragment>
+					)}
 					<ColorblindMode setChangeColorSettings={setChangeColorSettings} setMenuIsOpen={setMenuIsOpen} />
 				</DropdownContainer>
 			</HeaderImgContainer>
 		</React.Fragment>
-	)
-}
-
-const ProfileIcon = ({ menuIsOpen, setMenuIsOpen, isAuthenticated }) => {
-	const dispatch = useDispatch()
-	const username = useSelector(state => state.user?.details?.username)
-
-	return (
-		<HeaderImgContainer>
-			<HeaderImg
-				src={ProfileImg}
-				onClick={() => {
-					setMenuIsOpen(prevState => (prevState === 'profile' ? null : 'profile'))
-				}}
-			/>
-			<DropdownContainer isOpen={menuIsOpen === 'profile'}>
-				{isAuthenticated && (
-					<React.Fragment>
-						<p style={{ padding: '0 20px' }}>{username}</p>
-						<SubmitButton
-							type="button"
-							onClick={() => {
-								dispatch(logoutUser())
-							}}
-						>
-							Logout
-						</SubmitButton>
-					</React.Fragment>
-				)}
-				{!isAuthenticated && (
-					<React.Fragment>
-						<StyledNavLink to="/register">Register</StyledNavLink>
-						<StyledNavLink to="/login">Login</StyledNavLink>
-						<LocalUsername />
-					</React.Fragment>
-				)}
-			</DropdownContainer>
-		</HeaderImgContainer>
 	)
 }
 
@@ -144,8 +131,6 @@ const Navbar = () => {
 			<MenuContainer>
 				<StyledNavLink to="/join">Join</StyledNavLink>
 				{isAuthenticated && <StyledNavLink to="/create">Create</StyledNavLink>}
-
-				<SettingsIcon menuIsOpen={menuIsOpen} setMenuIsOpen={setMenuIsOpen} />
 
 				<ProfileIcon menuIsOpen={menuIsOpen} setMenuIsOpen={setMenuIsOpen} isAuthenticated={isAuthenticated} />
 			</MenuContainer>

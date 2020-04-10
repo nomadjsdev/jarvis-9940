@@ -31,42 +31,44 @@ const LocalUsername = ({ modalIsOpen }) => {
 
 	return (
 		<Modal>
-			<h2>Choose a temporary username</h2>
-			<form onSubmit={handleSubmit(usernameSubmit)}>
+			<div style={{ maxWidth: '500px', margin: '0 auto' }}>
+				<h2>Choose a temporary username</h2>
+				<form onSubmit={handleSubmit(usernameSubmit)}>
+					<p>
+						<label htmlFor="usernameField">Username</label>
+					</p>
+					<FieldContainer>
+						<InputField
+							type="text"
+							id="usernameField"
+							name="usernameField"
+							ref={register({
+								required: { value: true, message: 'Username is required' },
+								minLength: { value: 2, message: 'Username should be between 2 and 16 characters' },
+								maxLength: { value: 16, message: 'Username should be between 2 and 16 characters' },
+							})}
+						/>
+						{errors?.usernameField?.message && <FieldWarning>!!</FieldWarning>}
+					</FieldContainer>
+					<SubmitContainer>
+						<SubmitButton
+							type="button"
+							onClick={() => {
+								handleCancel()
+							}}
+						>
+							Cancel
+						</SubmitButton>
+						<SubmitButton type="submit" disabled={isSubmitting}>
+							Submit
+						</SubmitButton>
+					</SubmitContainer>
+				</form>
 				<p>
-					<label htmlFor="usernameField">Username</label>
+					Want to create a new session instead?{' '}
+					{isAuthenticated ? <Link to="/create">Start here!</Link> : <Link to="/register">Register now!</Link>}
 				</p>
-				<FieldContainer>
-					<InputField
-						type="text"
-						id="usernameField"
-						name="usernameField"
-						ref={register({
-							required: { value: true, message: 'Username is required' },
-							minLength: { value: 2, message: 'Username should be between 2 and 16 characters' },
-							maxLength: { value: 16, message: 'Username should be between 2 and 16 characters' },
-						})}
-					/>
-					{errors?.usernameField?.message && <FieldWarning>!!</FieldWarning>}
-				</FieldContainer>
-				<SubmitContainer>
-					<SubmitButton
-						type="button"
-						onClick={() => {
-							handleCancel()
-						}}
-					>
-						Cancel
-					</SubmitButton>
-					<SubmitButton type="submit" disabled={isSubmitting}>
-						Submit
-					</SubmitButton>
-				</SubmitContainer>
-			</form>
-			<p>
-				Want to create a new session instead?{' '}
-				{isAuthenticated ? <Link to="/create">Start here!</Link> : <Link to="/register">Register now!</Link>}
-			</p>
+			</div>
 		</Modal>
 	)
 }

@@ -22,63 +22,64 @@ const ChangeColorSettings = ({ modalIsOpen }) => {
 
 	return (
 		<Modal>
-			<h2>Colorblind mode</h2>
-			<div style={{ display: 'flex', flexFlow: 'row wrap' }}>
-				<ButtonContainer>
-					<ToggleButton active={false} colorMode={colorMode}>
-						Inactive
-					</ToggleButton>
-				</ButtonContainer>
-				<ButtonContainer>
-					<ToggleButton active={true} colorMode={colorMode}>
-						Active
-					</ToggleButton>
-				</ButtonContainer>
-				<ButtonContainer>
-					<MessageButton colorMode={colorMode}>Message</MessageButton>
-				</ButtonContainer>
-				<ButtonContainer>
-					<TimerButton colorMode={colorMode}>Timer</TimerButton>
-				</ButtonContainer>
-			</div>
-			<div style={{ display: 'flex', flexFlow: 'column nowrap' }}>
-				<SubmitButton
-					type="button"
-					active={colorMode === 'off' || colorMode === undefined || colorMode === null}
-					onClick={() => {
-						handleColorMode('off')
-					}}
-				>
-					Off (default)
-				</SubmitButton>
-				<SubmitButton
-					type="button"
-					active={colorMode === 'deut'}
-					onClick={() => {
-						handleColorMode('deut')
-					}}
-				>
-					Deuteranopia
-				</SubmitButton>
-				<SubmitButton
-					type="button"
-					active={colorMode === 'prot'}
-					onClick={() => {
-						handleColorMode('prot')
-					}}
-				>
-					Protanopia
-				</SubmitButton>
-				<SubmitButton
-					type="button"
-					active={colorMode === 'tri'}
-					onClick={() => {
-						handleColorMode('tri')
-					}}
-				>
-					Tritanopia
-				</SubmitButton>
-				<SubmitButton
+			<div style={{ maxWidth: '500px', margin: '0 auto' }}>
+				<h2>Change color settings</h2>
+				<div style={{ display: 'flex', flexFlow: 'row wrap' }}>
+					<ButtonContainer>
+						<ToggleButton active={false} colorMode={colorMode}>
+							Inactive
+						</ToggleButton>
+					</ButtonContainer>
+					<ButtonContainer>
+						<ToggleButton active={true} colorMode={colorMode}>
+							Active
+						</ToggleButton>
+					</ButtonContainer>
+					<ButtonContainer>
+						<MessageButton colorMode={colorMode}>Message</MessageButton>
+					</ButtonContainer>
+					<ButtonContainer>
+						<TimerButton colorMode={colorMode}>Timer</TimerButton>
+					</ButtonContainer>
+				</div>
+				<div style={{ display: 'flex', flexFlow: 'column nowrap' }}>
+					<SubmitButton
+						type="button"
+						active={colorMode === 'off' || colorMode === undefined || colorMode === null}
+						onClick={() => {
+							handleColorMode('off')
+						}}
+					>
+						Off (default)
+					</SubmitButton>
+					<SubmitButton
+						type="button"
+						active={colorMode === 'deut'}
+						onClick={() => {
+							handleColorMode('deut')
+						}}
+					>
+						Deuteranopia
+					</SubmitButton>
+					<SubmitButton
+						type="button"
+						active={colorMode === 'prot'}
+						onClick={() => {
+							handleColorMode('prot')
+						}}
+					>
+						Protanopia
+					</SubmitButton>
+					<SubmitButton
+						type="button"
+						active={colorMode === 'tri'}
+						onClick={() => {
+							handleColorMode('tri')
+						}}
+					>
+						Tritanopia
+					</SubmitButton>
+					{/* <SubmitButton
 					type="button"
 					active={colorMode === 'mono'}
 					onClick={() => {
@@ -86,18 +87,19 @@ const ChangeColorSettings = ({ modalIsOpen }) => {
 					}}
 				>
 					Monochromacy
-				</SubmitButton>
+				</SubmitButton> */}
+				</div>
+				<SubmitContainer>
+					<SubmitButton
+						type="button"
+						onClick={() => {
+							modalIsOpen(false)
+						}}
+					>
+						Close
+					</SubmitButton>
+				</SubmitContainer>
 			</div>
-			<SubmitContainer>
-				<SubmitButton
-					type="button"
-					onClick={() => {
-						modalIsOpen(false)
-					}}
-				>
-					Close
-				</SubmitButton>
-			</SubmitContainer>
 		</Modal>
 	)
 }

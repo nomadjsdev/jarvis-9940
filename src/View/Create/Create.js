@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom'
 
 import myFirebase from 'Service/Firebase'
 
+import { Page, PrimarySection } from 'Component/Global/Layout'
 import { SubmitButton } from 'Component/Global/Form'
 import Loading from 'Component/Global/Loading'
 
@@ -193,88 +194,90 @@ const Create = () => {
 	}, [selectedActivity, history, isCreating, selectedGame, uid])
 
 	return (
-		<React.Fragment>
+		<Page>
 			{isCreating && <Loading loadingMessage="Creating new session" />}
 
 			{!isCreating && (
-				<React.Fragment>
-					<h1>Create a new session</h1>
-					{games && (
-						<React.Fragment>
-							<h2>Select game:</h2>
-							<div style={{ display: 'flex', flexFlow: 'row wrap' }}>
-								{Object.keys(games).map(id => (
-									<SubmitButton
-										key={id}
-										type="button"
-										onClick={() => {
-											setSelectedGame(id)
-										}}
-										active={selectedGame === id}
-										disabled={isCreating || !games[id].isActive}
-									>
-										{games[id].name}
-									</SubmitButton>
-								))}
-							</div>
-						</React.Fragment>
-					)}
-					{selectedGame && (
-						<React.Fragment>
-							<h2>Select activity:</h2>
-							<div style={{ display: 'flex' }}>
-								{games[selectedGame].hasPve && (
-									<div>
-										<h3>PvE</h3>
-										{Object.keys(gamePveActivities[selectedGame]).map(id => {
-											if (activities[gamePveActivities[selectedGame][id]]) {
-												return (
-													<SubmitButton
-														key={id}
-														type="button"
-														onClick={() => {
-															setSelectedActivity(gamePveActivities[selectedGame][id])
-														}}
-														active={selectedActivity === id}
-														disabled={isCreating || !activities[gamePveActivities[selectedGame][id]].isActive}
-													>
-														{activities[gamePveActivities[selectedGame][id]].name}
-													</SubmitButton>
-												)
-											}
-											return false
-										})}
-									</div>
-								)}
-								{games[selectedGame].hasPvp && (
-									<div>
-										<h3>PvP</h3>
-										{Object.keys(gamePvpActivities[selectedGame]).map(id => {
-											if (activities[gamePvpActivities[selectedGame][id]]) {
-												return (
-													<SubmitButton
-														key={id}
-														type="button"
-														onClick={() => {
-															setSelectedActivity(gamePvpActivities[selectedGame][id])
-														}}
-														active={selectedActivity === id}
-														disabled={isCreating || !activities[gamePveActivities[selectedGame][id]].isActive}
-													>
-														{activities[gamePvpActivities[selectedGame][id]].name}
-													</SubmitButton>
-												)
-											}
-											return false
-										})}
-									</div>
-								)}
-							</div>
-						</React.Fragment>
-					)}
-				</React.Fragment>
+				<PrimarySection>
+					<div style={{ maxWidth: '300px', margin: '0 auto' }}>
+						<h1>Create a new session</h1>
+						{games && (
+							<React.Fragment>
+								<h2>Select game:</h2>
+								<div style={{ display: 'flex', flexFlow: 'row wrap' }}>
+									{Object.keys(games).map(id => (
+										<SubmitButton
+											key={id}
+											type="button"
+											onClick={() => {
+												setSelectedGame(id)
+											}}
+											active={selectedGame === id}
+											disabled={isCreating || !games[id].isActive}
+										>
+											{games[id].name}
+										</SubmitButton>
+									))}
+								</div>
+							</React.Fragment>
+						)}
+						{selectedGame && (
+							<React.Fragment>
+								<h2>Select activity:</h2>
+								<div style={{ display: 'flex' }}>
+									{games[selectedGame].hasPve && (
+										<div>
+											<h3>PvE</h3>
+											{Object.keys(gamePveActivities[selectedGame]).map(id => {
+												if (activities[gamePveActivities[selectedGame][id]]) {
+													return (
+														<SubmitButton
+															key={id}
+															type="button"
+															onClick={() => {
+																setSelectedActivity(gamePveActivities[selectedGame][id])
+															}}
+															active={selectedActivity === id}
+															disabled={isCreating || !activities[gamePveActivities[selectedGame][id]].isActive}
+														>
+															{activities[gamePveActivities[selectedGame][id]].name}
+														</SubmitButton>
+													)
+												}
+												return false
+											})}
+										</div>
+									)}
+									{games[selectedGame].hasPvp && (
+										<div>
+											<h3>PvP</h3>
+											{Object.keys(gamePvpActivities[selectedGame]).map(id => {
+												if (activities[gamePvpActivities[selectedGame][id]]) {
+													return (
+														<SubmitButton
+															key={id}
+															type="button"
+															onClick={() => {
+																setSelectedActivity(gamePvpActivities[selectedGame][id])
+															}}
+															active={selectedActivity === id}
+															disabled={isCreating || !activities[gamePveActivities[selectedGame][id]].isActive}
+														>
+															{activities[gamePvpActivities[selectedGame][id]].name}
+														</SubmitButton>
+													)
+												}
+												return false
+											})}
+										</div>
+									)}
+								</div>
+							</React.Fragment>
+						)}
+					</div>
+				</PrimarySection>
 			)}
-		</React.Fragment>
+		</Page>
 	)
 }
 
